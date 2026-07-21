@@ -2,12 +2,14 @@
 layout: default
 title : Publications
 navbar_title: Publications
+permalink: /publications/
 body_attr: >-
   data-spy="scroll" data-target="#navbar-year" data-offset="100"
 ---
 
 {% assign pubs_by_year = site.publications | sort: "date" | reverse | group_by_exp: "item", "item.date | date: '%Y'" %}
 
+{% if pubs_by_year.size > 0 %}
 <div class="row">
     <div class="col-12 col-lg-10">
         {% for year in pubs_by_year %}
@@ -30,3 +32,14 @@ body_attr: >-
     </div>
 
 </div>
+{% else %}
+<div class="row">
+    <div class="col">
+        <div class="card border-0 shadow-sm bg-white">
+            <div class="card-body p-4">
+                Publications will be added soon.
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
