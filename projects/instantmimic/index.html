@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="InstantMimic makes the full reinforcement learning pipeline GPU-native, enabling physics-based skills to be learned in seconds.">
+  <meta name="keywords"
+        content="physics-based character control, reinforcement learning, motion imitation, GPU-native training, character animation">
+  <meta name="author" content="Ikjun Choi, Geonho Leem, Jungdam Won">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="index, follow">
+
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Intelligent Motion Lab, Seoul National University">
+  <meta property="og:title"
+        content="InstantMimic: A High Performance System for Learning Physics-based Skills in Seconds">
+  <meta property="og:description"
+        content="InstantMimic makes the full reinforcement learning pipeline GPU-native, enabling physics-based skills to be learned in seconds.">
+  <meta property="og:url" content="https://scripter36.github.io/projects/instantmimic/">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title"
+        content="InstantMimic: A High Performance System for Learning Physics-based Skills in Seconds">
+  <meta name="twitter:description"
+        content="InstantMimic makes the full reinforcement learning pipeline GPU-native, enabling physics-based skills to be learned in seconds.">
+
+  <meta name="citation_title"
+        content="InstantMimic: A High Performance System for Learning Physics-based Skills in Seconds">
+  <meta name="citation_author" content="Choi, Ikjun">
+  <meta name="citation_author" content="Leem, Geonho">
+  <meta name="citation_author" content="Won, Jungdam">
+  <meta name="citation_publication_date" content="2026">
+  <meta name="citation_conference_title" content="SIGGRAPH Asia 2026 Conference">
+
+  <title>InstantMimic: A High Performance System for Learning Physics-based Skills in Seconds</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+  <link rel="stylesheet" href="/assets/project-page/css/bulma.min.css">
+  <link rel="stylesheet" href="/assets/project-page/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="/assets/project-page/css/nerfies.css">
+  <link rel="icon" href="/assets/project-page/images/favicon.svg">
+
+  <script defer src="/assets/project-page/js/fontawesome.all.min.js"></script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
+    "headline": "InstantMimic: A High Performance System for Learning Physics-based Skills in Seconds",
+    "description": "InstantMimic makes the full reinforcement learning pipeline GPU-native, enabling physics-based skills to be learned in seconds.",
+    "author": [
+      {
+        "@type": "Person",
+        "name": "Ikjun Choi",
+        "url": "https://scripter36.github.io/",
+        "affiliation": {
+          "@type": "Organization",
+          "name": "Seoul National University"
+        }
+      },
+      {
+        "@type": "Person",
+        "name": "Geonho Leem",
+        "url": "https://daebangstn.github.io/",
+        "affiliation": {
+          "@type": "Organization",
+          "name": "Seoul National University"
+        }
+      },
+      {
+        "@type": "Person",
+        "name": "Jungdam Won",
+        "url": "https://sites.google.com/view/jungdam",
+        "affiliation": {
+          "@type": "Organization",
+          "name": "Seoul National University"
+        }
+      }
+    ],
+    "publisher": {
+      "@type": "Organization",
+      "name": "SIGGRAPH Asia 2026 Conference"
+    },
+    "url": "https://scripter36.github.io/projects/instantmimic/",
+    "keywords": [
+      "physics-based character control",
+      "reinforcement learning",
+      "motion imitation",
+      "GPU-native training",
+      "character animation"
+    ],
+    "abstract": "Physics-based character control is a long-standing challenge in computer graphics and robotics, requiring policies that satisfy complex dynamics while producing realistic motion. Recent Deep RL approaches, particularly imitation learning methods such as DeepMimic, have had broad impact beyond animation, influencing robotics by enabling agile and expressive behaviors. While these approaches achieve impressive results, they remain computationally inefficient to train in practice. Despite GPU-accelerated simulation, we find that end-to-end pipelines often underutilize hardware due to overheads outside the physics solver, caused by fragmented GPU kernels and CPU memory access in the critical path. We present InstantMimic, a system that addresses these inefficiencies by making the entire training loop GPU-native. Our design reduces fragmented GPU kernels and eliminates CPU memory access in the critical path. Built on a GPU-native physics backend, our unified pipeline integrates simulation, environment computation, policy inference, and policy updates within a single execution flow. As a result, InstantMimic reduces training time by orders of magnitude, enabling the learning of diverse physics-based skills in seconds and making LLM-agent-driven experimentation practical.",
+    "isAccessibleForFree": true,
+    "mainEntity": {
+      "@type": "WebPage",
+      "@id": "https://scripter36.github.io/projects/instantmimic/"
+    }
+  }
+  </script>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">
+            InstantMimic: A High Performance System for Learning Physics-based Skills in Seconds
+          </h1>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://scripter36.github.io/" target="_blank" rel="noopener noreferrer">Ikjun Choi</a>,
+            </span>
+            <span class="author-block">
+              <a href="https://daebangstn.github.io/" target="_blank" rel="noopener noreferrer">Geonho Leem</a>,
+            </span>
+            <span class="author-block">
+              <a href="https://sites.google.com/view/jungdam" target="_blank" rel="noopener noreferrer">Jungdam Won</a>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://imo.snu.ac.kr/" target="_blank" rel="noopener noreferrer">Intelligent Motion Lab</a>,
+              Seoul National University
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-venue publication-status">
+            SIGGRAPH Asia 2026 (Conference, Conditionally Accepted)
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <span class="link-block">
+                <a class="external-link button is-normal is-rounded is-dark is-disabled"
+                   aria-disabled="true" tabindex="-1" title="Paper coming soon">
+                  <span class="icon">
+                    <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+
+              <span class="link-block">
+                <a href="https://github.com/Scripter36/InstantMimic"
+                   target="_blank" rel="noopener noreferrer"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                </a>
+              </span>
+
+              <span class="link-block">
+                <a class="external-link button is-normal is-rounded is-dark is-disabled"
+                   aria-disabled="true" tabindex="-1" title="arXiv coming soon">
+                  <span class="icon">
+                    <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Physics-based character control is a long-standing challenge in computer graphics and robotics, requiring policies that satisfy complex dynamics while producing realistic motion. Recent Deep RL approaches, particularly imitation learning methods such as DeepMimic, have had broad impact beyond animation, influencing robotics by enabling agile and expressive behaviors. While these approaches achieve impressive results, they remain computationally inefficient to train in practice. Despite GPU-accelerated simulation, we find that end-to-end pipelines often underutilize hardware due to overheads outside the physics solver, caused by fragmented GPU kernels and CPU memory access in the critical path. We present InstantMimic, a system that addresses these inefficiencies by making the entire training loop GPU-native. Our design reduces fragmented GPU kernels and eliminates CPU memory access in the critical path. Built on a GPU-native physics backend, our unified pipeline integrates simulation, environment computation, policy inference, and policy updates within a single execution flow. As a result, InstantMimic reduces training time by orders of magnitude, enabling the learning of diverse physics-based skills in seconds and making LLM-agent-driven experimentation practical.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This website is licensed under a
+            <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/"
+               target="_blank">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+          <p>
+            The website template is borrowed from
+            <a href="https://github.com/nerfies/nerfies.github.io" target="_blank">Nerfies</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
