@@ -73,6 +73,10 @@ body {
     margin-top: 1em;
 }
 
+.publication-status-detail {
+    font-weight: normal;
+}
+
 .publication-awards {
     color: #ff3860;
     width: fit-content;
