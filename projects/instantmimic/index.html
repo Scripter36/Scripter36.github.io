@@ -9,6 +9,7 @@
   <meta name="author" content="Ikjun Choi, Geonho Leem, Jungdam Won">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://scripter36.github.io/projects/instantmimic/">
 
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Intelligent Motion Lab, Seoul National University">
@@ -35,8 +36,8 @@
   <meta name="citation_author" content="Choi, Ikjun">
   <meta name="citation_author" content="Leem, Geonho">
   <meta name="citation_author" content="Won, Jungdam">
-  <meta name="citation_publication_date" content="2026">
-  <meta name="citation_conference_title" content="SIGGRAPH Asia 2026 Conference">
+  <meta name="citation_publication_date" content="2026/08/15">
+  <meta name="citation_online_date" content="2026/08/15">
   <meta name="citation_pdf_url"
         content="https://scripter36.github.io/projects/instantmimic/instantmimic-preprint-v1.pdf">
 
@@ -96,6 +97,8 @@
     ],
     "abstract": "Physics-based character control is a long-standing challenge in computer graphics and robotics, requiring policies that satisfy complex dynamics while producing realistic motion. Recent Deep RL approaches, particularly imitation learning methods such as DeepMimic, have had broad impact beyond animation, influencing robotics by enabling agile and expressive behaviors. While these approaches achieve impressive results, they remain computationally inefficient to train in practice. Despite GPU-accelerated simulation, we find that end-to-end pipelines often underutilize hardware due to overheads outside the physics solver, caused by fragmented GPU kernels and CPU memory access in the critical path. We present InstantMimic, a system that addresses these inefficiencies by making the entire training loop GPU-native. Built on a GPU-native physics backend, our unified pipeline integrates simulation, environment computation, policy inference, and policy updates within a single execution flow. As a result, InstantMimic compresses training for diverse physics-based skills to a few seconds, and makes LLM-agent-driven hyperparameter search practical.",
     "datePublished": "2026-08-15",
+    "version": "Preprint v1",
+    "creativeWorkStatus": "Conditionally accepted manuscript",
     "encoding": {
       "@type": "MediaObject",
       "contentUrl": "https://scripter36.github.io/projects/instantmimic/instantmimic-preprint-v1.pdf",
