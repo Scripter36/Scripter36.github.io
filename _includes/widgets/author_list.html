@@ -7,7 +7,7 @@
     {%- assign last_2chars = _key | slice: -2, 2%}
     {%- if last_2chars == "*#" or last_2chars == "#*" -%}
         {%- assign key = _key | replace: "#*", "" | replace: "*#", "" -%}
-        {%- assign mark = "*<sup>#</sup>" -%}
+        {%- assign mark = '*<sup class="publication-author-marker">#</sup>' -%}
         {%- assign has_eq_contrib = true -%}
         {%- assign has_corresponding = true -%}
     {%- elsif last_char == "*" -%}
@@ -16,7 +16,7 @@
         {%- assign has_eq_contrib = true -%}
     {%- elsif last_char == "#" -%}
         {%- assign key = _key | split: "#" | first -%}
-        {%- assign mark = '<sup>#</sup>' -%}
+        {%- assign mark = '<sup class="publication-author-marker">#</sup>' -%}
         {%- assign has_corresponding = true -%}
     {%- else -%}
         {%- assign key = _key -%}
@@ -48,13 +48,13 @@
 {%- endfor -%}
 
 {%- if has_eq_contrib or has_corresponding %}
-<mark>(
+<span class="publication-author-note">
     {%- if has_eq_contrib -%}
-        * <i> equal contribution</i>
+        <span class="publication-author-note-item">* Equal contribution</span>
     {%- endif -%}
     {%- if has_corresponding -%}
-        {%- if has_eq_contrib -%}, {% endif -%}
-        <sup>#</sup> <i> corresponding author</i>
+        {%- if has_eq_contrib -%}<span class="publication-author-note-separator" aria-hidden="true">·</span>{%- endif -%}
+        <span class="publication-author-note-item"><sup class="publication-author-marker">#</sup> Corresponding author</span>
     {%- endif -%}
-)</mark>
+</span>
 {%- endif -%}

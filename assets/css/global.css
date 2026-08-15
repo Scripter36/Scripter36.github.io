@@ -5,6 +5,22 @@ body {
     padding-top: 5.0rem;
 }
 
+.page-shell {
+    display: flex;
+    min-height: calc(100vh - 5rem);
+    flex-direction: column;
+}
+
+.page-content {
+    flex: 1 0 auto;
+    width: 100%;
+}
+
+.page-shell > .footer {
+    flex-shrink: 0;
+    width: 100%;
+}
+
 h1, h2, h3, h4, h5, h6,
 .h1, .h2, .h3, .h4, .h5, .h6 {
     font-weight: 700;
@@ -86,6 +102,53 @@ div.lazy {
 
 .badge-publication {
     font-size: 100%;
+}
+
+.publication-author-marker {
+    margin-left: 0.08em;
+    color: #6c757d;
+    font-size: 0.72em;
+    font-weight: 500;
+}
+
+.publication-author-note {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.3rem;
+    margin-left: 0.35rem;
+    color: #6c757d;
+    font-size: 0.875em;
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+.publication-author-note::before {
+    color: #adb5bd;
+    content: "·";
+}
+
+.publication-author-note-item {
+    white-space: nowrap;
+}
+
+.publication-author-note-separator {
+    color: #adb5bd;
+}
+
+.publication-status-badge {
+    display: inline-block;
+    margin-left: 0.35rem;
+    padding: 0.12rem 0.5rem 0.14rem;
+    border: 1px solid rgba(173, 112, 0, 0.24);
+    border-radius: 999px;
+    background-color: #fff8e5;
+    color: #7a5600;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    line-height: 1.1;
+    vertical-align: baseline;
+    white-space: nowrap;
 }
 
 .email-text {
