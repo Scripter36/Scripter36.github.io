@@ -15,5 +15,5 @@ links:
   Project:
     url: /projects/instantmimic/
     target: _self
-  Paper: /projects/instantmimic/instantmimic-preprint-v1.pdf
+  arXiv: https://arxiv.org/abs/2609.09821
 ---
