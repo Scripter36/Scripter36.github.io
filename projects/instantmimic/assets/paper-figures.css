@@ -58,3 +58,5 @@
 @media (prefers-reduced-motion: reduce) {
   .paper-figure__comparison { transition: none; }
 }
+
+#profile-panel > .paper-figure__summary { display: flex; justify-content: flex-start; gap: .75rem 2rem; }
