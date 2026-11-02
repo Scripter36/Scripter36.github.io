@@ -57,7 +57,7 @@
   <script defer src="./assets/demo.js?v=37778aa38d"></script>
   <link rel="stylesheet" href="./assets/paper-figures.css?v=5860c98c72">
   <link rel="stylesheet" href="./assets/typography.css?v=834f25223f">
-  <script defer src="./assets/paper-figures.js?v=16ac21765b"></script>
+  <script defer src="./assets/paper-figures.js?v=ae37d724bd"></script>
   <link rel="icon" href="/assets/project-page/images/favicon.svg">
 
   <script defer src="/assets/project-page/js/fontawesome.all.min.js"></script>
@@ -243,8 +243,8 @@
         <span class="is-sr-only" data-status role="status" aria-live="polite"></span>
         <details>
           <summary>About these timings</summary>
-          <p>Each demo starts with a timer showing the policy’s active training time, followed by its motion.
-            A successful evaluation completes 10 seconds in all 32 worlds.
+          <p>The timer shows the measured active training time before the learned motion plays.
+            Evaluation succeeds when all 32 worlds complete a 10-second rollout.
             Policies are evaluated every five iterations.</p>
           <table>
             <thead><tr><th>Motion</th><th>Active time</th><th>Seed</th><th>Selected iteration</th></tr></thead>
@@ -255,8 +255,7 @@
             </tbody>
           </table>
           <p>Active training time covers rollout collection and PPO updates.
-            Each row reports one run. The carousel plays five seconds of each video;
-            full recordings are linked below.</p>
+            Each row reports one run. The carousel plays five seconds from each recording.</p>
           <p>Full 10-second videos: <a href="./assets/walk.mp4?v=ed5e6b759d">Walk</a>,
             <a href="./assets/spinkick.mp4?v=6f38cf416f">spinkick</a>, and <a href="./assets/backflip.mp4?v=5dbd606e42">backflip</a>.</p>
           <p>See the <a href="https://github.com/Scripter36/InstantMimic/blob/HEAD/docs/reference/motion-demo.md">configs and measurement details</a>.</p>
@@ -315,10 +314,10 @@
     <div class="columns is-centered">
       <div class="column is-four-fifths">
         <h2 class="title is-3 has-text-centered">A GPU-native training loop</h2>
-        <p>Built on MuJoCo Warp, InstantMimic uses kernel fusion and CUDA Graph replay
-          to speed up the post-physics phase and PPO updates. State access and reset handling
-          stay on the GPU to avoid CPU memory access in the critical path.
-          The current runtime also includes simulator optimizations.</p>
+        <p>InstantMimic builds on MuJoCo Warp. Kernel fusion and CUDA Graph replay
+          reduce kernel fragmentation in the post-physics phase and PPO updates.
+          State access and reset handling stay on the GPU, removing CPU memory access
+          from the rollout critical path. The current runtime also includes simulator optimizations.</p>
         <figure class="paper-figure" data-interactive-figure="profile">
           <div data-figure-fallback class="paper-figure__fallback">
             <div class="paper-figure__summary">
@@ -338,7 +337,7 @@
               <div class="paper-figure__summary"><span><span data-figure-label>Isaac Lab</span><strong data-figure-value>105 kFPS</strong></span><span class="paper-figure__comparison" data-profile-comparison>mjlab<strong>157 kFPS</strong></span></div>
               <div class="paper-figure__notes" aria-label="Comparison findings">
                 <div data-profile-notes="reference">
-                  <p>Non-physics work takes 67% of the step.</p>
+                  <p>Most of the rollout step is spent outside physics.</p>
                   <p>Low GPU utilization outside physics.</p>
                 </div>
                 <div data-profile-notes="optimized" aria-hidden="true" style="opacity:0">
@@ -347,7 +346,7 @@
                 </div>
               </div>
               <div class="paper-figure__plot"><svg data-plot="profile" role="img" aria-label="Rollout phases and GPU utilization from 0 to 100 percent, on a relative time scale with baseline duration at 100 percent" aria-describedby="training-profile-caption"></svg></div>
-              <div class="paper-figure__legend" aria-label="Training phases">
+              <div class="paper-figure__legend" aria-label="Rollout phases">
               <span><i style="--series-color:#B9A0CC" aria-hidden="true"></i>Policy</span>
               <span><i style="--series-color:#8EC1FF" aria-hidden="true"></i>Physics</span>
               <span><i style="--series-color:#F8C27A" aria-hidden="true"></i>Evaluation</span>
@@ -357,7 +356,7 @@
             </div>
             <span class="paper-figure__sr" role="status" data-figure-live></span>
           </div>
-          <figcaption id="training-profile-caption">Throughput covers rollout collection and PPO updates. The plots show the paper’s rollout profile, normalized to the baseline rollout duration.</figcaption>
+          <figcaption id="training-profile-caption">Throughput includes rollout collection and PPO updates. The plots show rollout phases and GPU utilization, with the baseline rollout duration set to 100%.</figcaption>
         </figure>
       </div>
     </div>
@@ -369,10 +368,11 @@
     <div class="columns is-centered">
       <div class="column is-four-fifths">
         <h2 class="title is-3 has-text-centered">LLM agent based hyperparameter optimization</h2>
-        <p>Seconds-level training makes LLM agent hyperparameter optimization practical.
-          The agent plans the search and proposes candidate values; a Python executor trains
-          and benchmarks them with multiple seeds. Results guide the next cycle.
-          Across 80 cycles, backflip training time fell from 18.77 s to 2.17 s.</p>
+        <p>Training in seconds lets an LLM agent run repeated hyperparameter experiments.
+          The agent plans the search and proposes candidate values. A Python executor trains
+          and benchmarks each candidate with multiple seeds, and the agent uses the results
+          to revise its search strategy. In the paper’s 80-cycle backflip search,
+          time to success fell from 18.77 s to 2.17 s.</p>
         <figure class="paper-figure" data-interactive-figure="search">
           <div data-figure-fallback class="paper-figure__fallback paper-figure__fallback--search">
             <img src="./assets/search-progress.jpg" alt="Best training time decreases from 18.77 to 2.17 seconds over 80 optimization cycles." width="1920" height="930" loading="lazy">
@@ -405,7 +405,7 @@
             </div>
             <span class="paper-figure__sr" role="status" data-figure-live></span>
           </div>
-          <figcaption id="hyperparameter-search-caption">Left: best training time to reach 90% success (median of three seeds), starting at cycle 0. Right: backflip learning curves from Figure 7b, with the optimized configuration found at cycle 65. See the <a href="https://arxiv.org/pdf/2609.09821">paper and appendix</a> for settings.</figcaption>
+          <figcaption id="hyperparameter-search-caption">Left: best time to 90% success, measured as the median active training time across three seeds. Right: backflip learning curves for the initial configuration and the configuration found at cycle 65 (Figure 7b). See the <a href="https://arxiv.org/pdf/2609.09821">paper and appendix</a> for settings.</figcaption>
         </figure>
       </div>
     </div>
@@ -417,17 +417,17 @@
     <div class="columns is-centered">
       <div class="column is-four-fifths">
         <h2 class="title is-3 has-text-centered">Scaling to large motion datasets</h2>
-        <p>A VAE-based latent controller learns from 37.4 hours of AMASS motion.
-          In the paper, it reaches a tracking success rate comparable to PHC within 30 minutes.
-          With the decoder frozen, the paper demonstrates downstream goal-position tracking
-          after one minute of training in its latent action space.</p>
+        <p>In the paper, we pretrain a VAE-based latent controller on 37.4 hours of AMASS motion,
+          reaching a success rate comparable to PHC within 30 minutes. We then freeze the decoder
+          and train a downstream goal-position tracking policy in its latent action space.
+          The policy learns to follow goals after one minute of training.</p>
         <figure class="amass-demo">
           <h3 class="title is-5">Sampling the latent controller</h3>
           <video controls muted playsinline loop preload="metadata" width="1440" height="960" poster="./assets/amass-latent.jpg?v=c94de5107e" aria-label="Sampling the latent controller">
             <source src="./assets/amass-latent.mp4?v=a421439c83" type="video/mp4">
             <a href="./assets/amass-latent.mp4?v=a421439c83">Watch the video</a>
           </video>
-          <figcaption>Characters start from random motion frames and sample a new latent command every second.</figcaption>
+          <figcaption>Starting from random motion frames, the characters move by sampling a new latent command every second.</figcaption>
         </figure>
         <figure class="amass-demo">
           <h3 class="title is-5">Goal-position tracking</h3>
@@ -435,7 +435,7 @@
             <source src="./assets/amass-goal.mp4?v=ea70bb601a" type="video/mp4">
             <a href="./assets/amass-goal.mp4?v=ea70bb601a">Watch the video</a>
           </video>
-          <figcaption>A downstream policy uses the frozen decoder to guide the character toward target positions.</figcaption>
+          <figcaption>A downstream policy guides the character toward target positions through the frozen decoder.</figcaption>
         </figure>
       </div>
     </div>

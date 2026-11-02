@@ -108,7 +108,7 @@
     const span = box.right - box.left;
     const x = percent => box.left + span * percent / 100;
     const y = value => box.bottom - (box.bottom - box.top) * value / 100;
-    text(svg, box.left, 24, 'Training-step phases', {class: 'plot-heading'});
+    text(svg, box.left, 24, 'Rollout phases', {class: 'plot-heading'});
     const phases = data.profile.phases.map(phase => ({
       ...phase,
       rect: node(svg, 'rect', {y: 45, height: 64, fill: phase.color, 'data-phase-fill': phase.name}),
@@ -130,7 +130,7 @@
       item.label.setAttribute('x', legendX + 15);
       legendX += legendWidths[index] + 16;
     });
-    axes(svg, box, [0, 20, 40, 60, 80, 100], [0, 50, 100], 'Relative step time (%)', 'GPU util. (%)', x, y, {hideYAxis: compact});
+    axes(svg, box, [0, 20, 40, 60, 80, 100], [0, 50, 100], 'Relative rollout time (%)', 'GPU util. (%)', x, y, {hideYAxis: compact});
     const clipId = `profile-duration-${++nextId}`;
     const clip = node(node(node(svg, 'defs'), 'clipPath', {id: clipId}), 'rect', {x: box.left, y: box.top, height: box.bottom - box.top});
     const bars = node(svg, 'g', {'clip-path': `url(#${clipId})`});
