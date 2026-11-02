@@ -230,13 +230,13 @@
         </div>
         <nav class="motion-demo__motions motion-demo__enhanced" aria-label="Choose a motion">
           <button type="button" data-motion aria-pressed="true">Walk</button>
+          <button type="button" data-motion aria-pressed="false">Run</button>
           <button type="button" data-motion aria-pressed="false">Spinkick</button>
           <button type="button" data-motion aria-pressed="false">Backflip</button>
+          <button type="button" data-motion aria-pressed="false">Cartwheel</button>
         </nav>
         <p class="motion-demo__fallback">
-          <a href="./assets/walk.mp4?v=ed5e6b759d">Walk</a>,
-          <a href="./assets/spinkick.mp4?v=6f38cf416f">spinkick</a>, and
-          <a href="./assets/backflip.mp4?v=5dbd606e42">backflip</a> videos.
+          <a href="./assets/walk.mp4?v=ed5e6b759d">Walk</a>, <a href="./assets/run.mp4?v=dd86ed9a17">Run</a>, <a href="./assets/spinkick.mp4?v=6f38cf416f">Spinkick</a>, <a href="./assets/backflip.mp4?v=5dbd606e42">Backflip</a>, <a href="./assets/cartwheel.mp4?v=3d216d1392">Cartwheel</a> videos.
         </p>
         <p class="motion-demo__notes">The green figure shows the reference motion.</p>
         <p class="motion-demo__notes">Active training time on an RTX 5090.</p>
@@ -250,14 +250,15 @@
             <thead><tr><th>Motion</th><th>Active time</th><th>Seed</th><th>Selected iteration</th></tr></thead>
             <tbody>
               <tr><td>Walk</td><td>1.136 s</td><td>42</td><td>70</td></tr>
+              <tr><td>Run</td><td>0.878 s</td><td>43</td><td>55</td></tr>
               <tr><td>Spinkick</td><td>1.238 s</td><td>43</td><td>75</td></tr>
               <tr><td>Backflip</td><td>1.933 s</td><td>43</td><td>120</td></tr>
+              <tr><td>Cartwheel</td><td>1.363 s</td><td>43</td><td>85</td></tr>
             </tbody>
           </table>
           <p>Active training time covers rollout collection and PPO updates.
             Each row reports one run. The carousel plays five seconds from each recording.</p>
-          <p>Full 10-second videos: <a href="./assets/walk.mp4?v=ed5e6b759d">Walk</a>,
-            <a href="./assets/spinkick.mp4?v=6f38cf416f">spinkick</a>, and <a href="./assets/backflip.mp4?v=5dbd606e42">backflip</a>.</p>
+          <p>Full 10-second videos: <a href="./assets/walk.mp4?v=ed5e6b759d">Walk</a>, <a href="./assets/run.mp4?v=dd86ed9a17">Run</a>, <a href="./assets/spinkick.mp4?v=6f38cf416f">Spinkick</a>, <a href="./assets/backflip.mp4?v=5dbd606e42">Backflip</a>, <a href="./assets/cartwheel.mp4?v=3d216d1392">Cartwheel</a>.</p>
           <p>See the <a href="https://github.com/Scripter36/InstantMimic/blob/HEAD/docs/reference/motion-demo.md">configs and measurement details</a>.</p>
         </details>
       </div>
@@ -275,6 +276,20 @@
     "firstSuccessIteration": 65,
     "firstSuccessActiveSeconds": 1.055982817,
     "selection": "Selected demonstration checkpoint after first success"
+  },
+  {
+    "id": "run",
+    "name": "Run",
+    "video": "assets/run.mp4?v=dd86ed9a17",
+    "poster": "assets/run.jpg?v=5560e16438",
+    "activeSeconds": 0.878,
+    "seed": 43,
+    "iteration": 55,
+    "sha256": "dd86ed9a17a9bb85b0e4c4440e99653d6bbbb2fa512414d96982e0678a5744eb",
+    "action": "run",
+    "firstSuccessIteration": 55,
+    "firstSuccessActiveSeconds": 0.878,
+    "selection": "First all-world successful evaluation"
   },
   {
     "id": "spinkick",
@@ -302,6 +317,20 @@
     "action": "backflip",
     "firstSuccessIteration": 120,
     "firstSuccessActiveSeconds": 1.9329602030000002,
+    "selection": "First all-world successful evaluation"
+  },
+  {
+    "id": "cartwheel",
+    "name": "Cartwheel",
+    "video": "assets/cartwheel.mp4?v=3d216d1392",
+    "poster": "assets/cartwheel.jpg?v=311d049424",
+    "activeSeconds": 1.363,
+    "seed": 43,
+    "iteration": 85,
+    "sha256": "3d216d1392d8910ab29fa84cb74de83cd5dd8dad5037cbb40d6fbdc3f0947503",
+    "action": "cartwheel",
+    "firstSuccessIteration": 85,
+    "firstSuccessActiveSeconds": 1.363,
     "selection": "First all-world successful evaluation"
   }
 ]</script>

@@ -1,7 +1,7 @@
 {
   "sourceRevision": "7cf06a9d635db4329343b31691d66ed3c91f443b",
   "gpu": "NVIDIA GeForce RTX 5090",
-  "protocol": "One selected run per motion, evaluated every five training iterations in 32 deterministic worlds for 300 control steps. Spinkick and backflip use the first all-world successful checkpoint; walk uses iteration 70 after first success at iteration 65. Not three-seed medians.",
+  "protocol": "One selected run per motion, evaluated every five training iterations in 32 deterministic worlds for 300 control steps. Run, spinkick, backflip and cartwheel use the first all-world successful checkpoint; walk uses iteration 70 after first success at iteration 65. Not three-seed medians.",
   "timeDefinition": "Active training excludes initialization, compile setup, evaluation, checkpoint saving and recording.",
   "motions": [
     {
@@ -17,6 +17,20 @@
       "firstSuccessIteration": 65,
       "firstSuccessActiveSeconds": 1.055982817,
       "selection": "Selected demonstration checkpoint after first success"
+    },
+    {
+      "id": "run",
+      "name": "Run",
+      "video": "assets/run.mp4?v=dd86ed9a17",
+      "poster": "assets/run.jpg?v=5560e16438",
+      "activeSeconds": 0.878,
+      "seed": 43,
+      "iteration": 55,
+      "sha256": "dd86ed9a17a9bb85b0e4c4440e99653d6bbbb2fa512414d96982e0678a5744eb",
+      "action": "run",
+      "firstSuccessIteration": 55,
+      "firstSuccessActiveSeconds": 0.878,
+      "selection": "First all-world successful evaluation"
     },
     {
       "id": "spinkick",
@@ -44,6 +58,20 @@
       "action": "backflip",
       "firstSuccessIteration": 120,
       "firstSuccessActiveSeconds": 1.9329602030000002,
+      "selection": "First all-world successful evaluation"
+    },
+    {
+      "id": "cartwheel",
+      "name": "Cartwheel",
+      "video": "assets/cartwheel.mp4?v=3d216d1392",
+      "poster": "assets/cartwheel.jpg?v=311d049424",
+      "activeSeconds": 1.363,
+      "seed": 43,
+      "iteration": 85,
+      "sha256": "3d216d1392d8910ab29fa84cb74de83cd5dd8dad5037cbb40d6fbdc3f0947503",
+      "action": "cartwheel",
+      "firstSuccessIteration": 85,
+      "firstSuccessActiveSeconds": 1.363,
       "selection": "First all-world successful evaluation"
     }
   ],
