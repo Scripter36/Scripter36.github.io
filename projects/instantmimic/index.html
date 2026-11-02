@@ -238,15 +238,14 @@
           <a href="./assets/spinkick.mp4?v=6f38cf416f">spinkick</a>, and
           <a href="./assets/backflip.mp4?v=5dbd606e42">backflip</a> videos.
         </p>
-        <p class="motion-demo__notes">Green ghost: reference motion, shifted back for comparison.</p>
-        <p class="motion-demo__notes">Measured on an RTX 5090. Times exclude setup and evaluation.</p>
+        <p class="motion-demo__notes">The green figure shows the reference motion.</p>
+        <p class="motion-demo__notes">Active training time on an RTX 5090.</p>
         <span class="is-sr-only" data-status role="status" aria-live="polite"></span>
         <details>
           <summary>About these timings</summary>
-          <p>The timer replays the measured active training time, then shows the saved policy.
-            Each clip shows a selected checkpoint from one run.
-            A policy succeeds when all 32 deterministic evaluation environments finish 10 seconds
-            without early termination. Evaluation runs every five training iterations.</p>
+          <p>Each demo starts with a timer showing the policy’s active training time, followed by its motion.
+            A successful evaluation completes 10 seconds in all 32 worlds.
+            Policies are evaluated every five iterations.</p>
           <table>
             <thead><tr><th>Motion</th><th>Active time</th><th>Seed</th><th>Selected iteration</th></tr></thead>
             <tbody>
@@ -255,13 +254,9 @@
               <tr><td>Backflip</td><td>1.933 s</td><td>43</td><td>120</td></tr>
             </tbody>
           </table>
-          <p>Walk uses iteration 70 (1.136 s); its first successful evaluation was at iteration 65 (1.056 s).
-            Spinkick and backflip use their first evaluations in which all 32 worlds succeeded.</p>
-          <p>Active time includes rollout collection and PPO updates. It excludes initialization,
-            compile setup, evaluation, checkpoint saving, and recording.
-            These examples are individual runs, not three-seed medians.
-            The carousel shows the first five seconds of each rollout at normal playback speed.
-            The card progress bar covers the training time replay and those five seconds.</p>
+          <p>Active training time covers rollout collection and PPO updates.
+            Each row reports one run. The carousel plays five seconds of each video;
+            full recordings are linked below.</p>
           <p>Full 10-second videos: <a href="./assets/walk.mp4?v=ed5e6b759d">Walk</a>,
             <a href="./assets/spinkick.mp4?v=6f38cf416f">spinkick</a>, and <a href="./assets/backflip.mp4?v=5dbd606e42">backflip</a>.</p>
           <p>See the <a href="https://github.com/Scripter36/InstantMimic/blob/HEAD/docs/reference/motion-demo.md">configs and measurement details</a>.</p>
@@ -320,10 +315,10 @@
     <div class="columns is-centered">
       <div class="column is-four-fifths">
         <h2 class="title is-3 has-text-centered">A GPU-native training loop</h2>
-        <p>In the reference loop, most of a rollout step goes to reward evaluation, resets,
-          and observation construction. InstantMimic fuses this work into Warp kernels and
-          uses CUDA Graph replay to reduce launch overhead. Simulation state and reset
-          decisions stay on the GPU, avoiding CPU round trips. PPO updates use PyTorch compilation.</p>
+        <p>Most of the reference loop’s rollout time is spent outside physics.
+          InstantMimic fuses environment computation into Warp kernels and keeps simulation
+          state on the GPU. CUDA Graph replay reduces launch overhead, and PyTorch compilation
+          speeds up PPO updates.</p>
         <figure class="paper-figure" data-interactive-figure="profile">
           <div data-figure-fallback class="paper-figure__fallback">
             <div class="paper-figure__summary">
@@ -346,7 +341,7 @@
                   <p>Low GPU utilization outside physics.</p>
                 </div>
                 <div data-profile-notes="optimized" aria-hidden="true" style="opacity:0">
-                  <p>Physics takes 91.3% of the step.</p>
+                  <p>Physics takes most of the step.</p>
                   <p>GPU utilization stays high through the step.</p>
                 </div>
               </div>
@@ -361,7 +356,7 @@
             </div>
             <span class="paper-figure__sr" role="status" data-figure-live></span>
           </div>
-          <figcaption id="training-profile-caption">Throughput includes rollout collection and PPO updates. The Reference value is from the paper; InstantMimic uses the current runtime. The plots show the paper’s rollout profile, with reference duration normalized to 100%.</figcaption>
+          <figcaption id="training-profile-caption">Throughput covers rollout collection and PPO updates: the paper’s Reference result and the current InstantMimic runtime. The plots show the paper’s rollout profile, normalized to the Reference step duration.</figcaption>
         </figure>
       </div>
     </div>
@@ -373,11 +368,9 @@
     <div class="columns is-centered">
       <div class="column is-four-fifths">
         <h2 class="title is-3 has-text-centered">LLM-guided hyperparameter search</h2>
-        <p>Short training runs let an LLM agent try many configurations. The agent plans the
-          search and proposes hyperparameter values. A Python executor trains and evaluates
-          the candidates across multiple seeds, then returns the results so the agent can
-          decide what to try next. In the backflip study, 80 cycles cut active training time
-          from 18.77 s to 2.17 s.</p>
+        <p>Training in seconds makes it practical for an LLM agent to tune hyperparameters.
+          The agent uses results from multi-seed training runs to choose the next configuration.
+          Across 80 search cycles, backflip training time fell from 18.77 s to 2.17 s.</p>
         <figure class="paper-figure" data-interactive-figure="search">
           <div data-figure-fallback class="paper-figure__fallback paper-figure__fallback--search">
             <img src="./assets/search-progress.jpg" alt="Best training time decreases from 18.77 to 2.17 seconds over 80 optimization cycles." width="1920" height="930" loading="lazy">
@@ -410,7 +403,7 @@
             </div>
             <span class="paper-figure__sr" role="status" data-figure-live></span>
           </div>
-          <figcaption id="hyperparameter-search-caption">Left: best active training time to reach 90% success, measured as a three-seed median. Cycle 0 denotes the starting configuration. Right: learning curves and shaded ranges reproduced from the paper’s Figure 7b; the optimized curve becomes available at cycle 65. These paper experiments are separate from the individual motion runs above. See the <a href="https://arxiv.org/pdf/2609.09821">paper and appendix</a> for settings.</figcaption>
+          <figcaption id="hyperparameter-search-caption">Left: best training time to reach 90% success (median of three seeds), starting at cycle 0. Right: backflip learning curves from Figure 7b, with the optimized configuration found at cycle 65. See the <a href="https://arxiv.org/pdf/2609.09821">paper and appendix</a> for settings.</figcaption>
         </figure>
       </div>
     </div>
