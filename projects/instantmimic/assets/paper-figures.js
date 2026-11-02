@@ -136,7 +136,7 @@
     const bars = node(svg, 'g', {'clip-path': `url(#${clipId})`});
     const baselineTotals = phases.reduce((sum, p) => sum + p.baseline, 0);
     const optimizedTotals = phases.reduce((sum, p) => sum + p.optimized, 0);
-    const optimizedTimePercent = 100 * data.profile.baselineKfps / data.profile.optimizedKfps;
+    const optimizedTimePercent = data.profile.optimizedTimePercent;
     const optimizedBarCount = Math.ceil(optimizedTimePercent / data.profile.timeBinPercent);
     const binWidth = span * data.profile.timeBinPercent / 100;
     const samples = series.map(item => item.baseline.map((value, i) => {
