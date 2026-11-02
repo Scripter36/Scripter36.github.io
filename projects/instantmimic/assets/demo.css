@@ -1,0 +1,45 @@
+.motion-demo { max-width: 680px; margin: 0 auto; color: #292d31; }
+.motion-demo button { font: inherit; cursor: pointer; }
+.motion-demo button:focus-visible, .motion-demo:focus-visible { outline: 3px solid #237e9d; outline-offset: 4px; }
+.motion-demo__heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+.motion-demo__title { margin: 0; font-size: 1.4rem; font-weight: 600; }
+.motion-demo__time { text-align: right; font-variant-numeric: tabular-nums; }
+.motion-demo__time strong { font-size: 1.45rem; font-weight: 600; }
+.motion-demo__time span { display: block; font-size: .8rem; color: #606970; }
+.motion-demo__stage { position: relative; overflow: hidden; aspect-ratio: 1; border-radius: 12px; background: #45494a; touch-action: pan-y; }
+.motion-demo video { display: block; width: 100%; height: 100%; object-fit: contain; }
+.motion-demo__overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; padding: 2rem; color: #fff; background: rgba(37, 42, 44, .84); }
+.motion-demo__overlay[hidden] { display: none; }
+.motion-demo__overlay strong { color: #fff; font-size: 1.5rem; font-weight: 500; }
+.motion-demo progress { display: block; width: min(320px, 100%); height: 7px; border: 0; border-radius: 7px; overflow: hidden; background: #71797c; accent-color: #b6dae2; }
+.motion-demo progress::-webkit-progress-bar { background: #71797c; }
+.motion-demo progress::-webkit-progress-value { background: #b6dae2; }
+.motion-demo progress::-moz-progress-bar { background: #b6dae2; }
+.motion-demo__elapsed { font-size: .95rem; font-variant-numeric: tabular-nums; }
+.motion-demo__controls { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin: 1rem 0 .75rem; }
+.motion-demo__controls button { border: 1px solid #d4d9dc; border-radius: 7px; background: #fff; color: #30383d; min-width: 42px; min-height: 42px; padding: .5rem .8rem; }
+.motion-demo__controls button:hover { background: #f0f3f4; }
+.motion-demo__motions { display: flex; flex-wrap: wrap; justify-content: center; gap: .4rem; }
+.motion-demo__motions button { border: 0; border-radius: 6px; color: #626b70; background: transparent; padding: .45rem .8rem; }
+.motion-demo__motions button[aria-pressed="true"] { color: #18465a; background: #e8f0f3; }
+.motion-demo__caption { margin: 1rem 0 .5rem; text-align: center; font-size: 1rem; line-height: 1.6; }
+.motion-demo__notes { color: #697278; font-size: .85rem; line-height: 1.6; text-align: center; }
+.motion-demo details { margin-top: 1rem; font-size: .88rem; line-height: 1.6; }
+.motion-demo summary { cursor: pointer; color: #52636d; text-align: center; }
+.motion-demo details p { margin: .8rem 0; }
+.motion-demo table { width: 100%; margin: .75rem 0; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.motion-demo th, .motion-demo td { padding: .4rem .25rem; text-align: left; border-bottom: 1px solid #e5e8ea; }
+.motion-demo__enhanced { display: none; }
+.motion-demo[data-enhanced] .motion-demo__enhanced { display: flex; }
+.motion-demo:not([data-enhanced]) .motion-demo__overlay { display: none; }
+.motion-demo__fallback { margin: .75rem 0; text-align: center; }
+.motion-demo[data-enhanced] .motion-demo__fallback { display: none; }
+@media (max-width: 480px) {
+  .motion-demo__controls { gap: .3rem; }
+  .motion-demo__controls button { padding: .45rem .6rem; }
+  .motion-demo__motions button { padding: .45rem .6rem; }
+  .motion-demo__overlay { padding: 1rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .motion-demo *, .motion-demo *::before, .motion-demo *::after { scroll-behavior: auto !important; transition: none !important; }
+}

@@ -19,9 +19,9 @@
         content="InstantMimic makes the full reinforcement learning pipeline GPU-native, enabling physics-based skills to be learned in seconds.">
   <meta property="og:url" content="https://scripter36.github.io/projects/instantmimic/">
   <meta property="og:image"
-        content="https://scripter36.github.io/projects/instantmimic/assets/instantmimic-training-progress.png">
+        content="https://scripter36.github.io/projects/instantmimic/assets/demo-preview.jpg">
   <meta property="og:image:alt"
-        content="Learning progress for walk, spinkick, and backflip policies in InstantMimic.">
+        content="Walk, spinkick, and backflip policies learned in seconds of active training.">
 
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title"
@@ -29,7 +29,7 @@
   <meta name="twitter:description"
         content="InstantMimic makes the full reinforcement learning pipeline GPU-native, enabling physics-based skills to be learned in seconds.">
   <meta name="twitter:image"
-        content="https://scripter36.github.io/projects/instantmimic/assets/instantmimic-training-progress.png">
+        content="https://scripter36.github.io/projects/instantmimic/assets/demo-preview.jpg">
 
   <meta name="citation_title"
         content="InstantMimic: A High Performance System for Learning Physics-based Skills in Seconds">
@@ -53,6 +53,8 @@
   <link rel="stylesheet" href="/assets/project-page/css/fontawesome.all.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
   <link rel="stylesheet" href="/assets/project-page/css/nerfies.css">
+  <link rel="stylesheet" href="./assets/demo.css">
+  <script defer src="./assets/demo.js"></script>
   <link rel="icon" href="/assets/project-page/images/favicon.svg">
 
   <script defer src="/assets/project-page/js/fontawesome.all.min.js"></script>
@@ -187,11 +189,96 @@
 <section class="hero teaser">
   <div class="container is-max-desktop">
     <div class="hero-body">
-      <img src="./assets/instantmimic-training-progress.png"
-           alt="Learning progress for walk, spinkick, and backflip policies, trained in 1.5, 1.9, and 2.6 seconds respectively.">
-      <h2 class="subtitle has-text-centered">
-        InstantMimic learns diverse physics-based skills in only a few seconds of wall-clock training.
-      </h2>
+      <div id="motion-demo" class="motion-demo" tabindex="0" aria-label="Motion learning demonstration">
+        <div class="motion-demo__heading">
+          <h2 class="motion-demo__title" data-title>Walk</h2>
+          <div class="motion-demo__time"><strong data-time>1.36 s</strong><span>active training</span></div>
+        </div>
+        <div class="motion-demo__stage" data-stage>
+          <video controls muted playsinline preload="auto" poster="./assets/walk.jpg" aria-label="Learned motion playback">
+            <source src="./assets/walk.mp4" type="video/mp4">
+            <a href="./assets/walk.mp4">Watch the walk video</a>
+          </video>
+          <div class="motion-demo__overlay" data-overlay>
+            <strong data-message>Training…</strong>
+            <progress value="0" max="1.36376232" aria-label="Measured active training time"></progress>
+            <span class="motion-demo__elapsed" data-elapsed aria-hidden="true">0.00 / 1.36 s</span>
+          </div>
+        </div>
+        <div class="motion-demo__controls motion-demo__enhanced">
+          <button type="button" data-prev aria-label="Previous motion">&#8592;</button>
+          <div>
+            <button type="button" data-pause aria-label="Pause demo">Pause</button>
+            <button type="button" data-replay>Replay</button>
+          </div>
+          <button type="button" data-next aria-label="Next motion">&#8594;</button>
+        </div>
+        <nav class="motion-demo__motions motion-demo__enhanced" aria-label="Choose a motion">
+          <button type="button" data-motion aria-pressed="true">Walk</button>
+          <button type="button" data-motion aria-pressed="false">Spinkick</button>
+          <button type="button" data-motion aria-pressed="false">Backflip</button>
+        </nav>
+        <p class="motion-demo__fallback">
+          <a href="./assets/walk.mp4">Walk</a>,
+          <a href="./assets/spinkick.mp4">spinkick</a>, and
+          <a href="./assets/backflip.mp4">backflip</a> videos.
+        </p>
+        <p class="motion-demo__caption">Physics-based skills learned in seconds.</p>
+        <p class="motion-demo__notes">Measured on an RTX 5090. Times exclude setup and evaluation.</p>
+        <span class="is-sr-only" data-status role="status" aria-live="polite"></span>
+        <details>
+          <summary>About these timings</summary>
+          <p>The timer replays the measured active training time, then shows the saved policy.
+            Each clip comes from the first successful evaluation of one run.
+            A policy succeeds when all 32 deterministic evaluation environments finish 10 seconds
+            without early termination. Evaluation runs every five training iterations.</p>
+          <table>
+            <thead><tr><th>Motion</th><th>Time</th><th>Seed</th><th>Iterations</th></tr></thead>
+            <tbody>
+              <tr><td>Walk</td><td>1.36 s</td><td>42</td><td>60</td></tr>
+              <tr><td>Spinkick</td><td>1.71 s</td><td>43</td><td>75</td></tr>
+              <tr><td>Backflip</td><td>2.82 s</td><td>43</td><td>125</td></tr>
+            </tbody>
+          </table>
+          <p>Active time includes rollout collection and PPO updates. It excludes initialization,
+            compile setup, evaluation, checkpoint saving, and recording.
+            These examples are individual runs, not three-seed medians.
+            All clips are 10-second rollouts at normal playback speed.</p>
+          <p>See the <a href="https://github.com/Scripter36/InstantMimic/blob/HEAD/docs/reference/motion-demo.md">configs and measurement details</a>.</p>
+        </details>
+      </div>
+      <script type="application/json" id="motion-demo-data">[
+  {
+    "id": "walk",
+    "name": "Walk",
+    "video": "assets/walk.mp4",
+    "poster": "assets/walk.jpg",
+    "activeSeconds": 1.3637623200000002,
+    "seed": 42,
+    "iteration": 60,
+    "sha256": "00341f7076088686e003ad6293120c8f6c76e7dc0ca54697f04c49930d9b56ee"
+  },
+  {
+    "id": "spinkick",
+    "name": "Spinkick",
+    "video": "assets/spinkick.mp4",
+    "poster": "assets/spinkick.jpg",
+    "activeSeconds": 1.710451361,
+    "seed": 43,
+    "iteration": 75,
+    "sha256": "c3b944bee6527d633059def5ca92f2196c5f405e8904477ac325d94432922757"
+  },
+  {
+    "id": "backflip",
+    "name": "Backflip",
+    "video": "assets/backflip.mp4",
+    "poster": "assets/backflip.jpg",
+    "activeSeconds": 2.8165317450000003,
+    "seed": 43,
+    "iteration": 125,
+    "sha256": "aec0150502750f8724c3e70a282a9b5a64632cdc590383d63bb5714b0e875b5a"
+  }
+]</script>
     </div>
   </div>
 </section>

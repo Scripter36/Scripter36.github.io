@@ -1,0 +1,38 @@
+{
+  "sourceRevision": "5e16b9b684f64af04623c233508ddca506afb001",
+  "gpu": "NVIDIA GeForce RTX 5090",
+  "protocol": "First evaluated checkpoint completing 300 control steps in all 32 deterministic evaluation worlds. Evaluation interval: 5 training iterations. One selected run per motion; not a three-seed median.",
+  "timeDefinition": "Active training excludes initialization, compile setup, evaluation, checkpoint saving and recording.",
+  "motions": [
+    {
+      "id": "walk",
+      "name": "Walk",
+      "video": "assets/walk.mp4",
+      "poster": "assets/walk.jpg",
+      "activeSeconds": 1.3637623200000002,
+      "seed": 42,
+      "iteration": 60,
+      "sha256": "00341f7076088686e003ad6293120c8f6c76e7dc0ca54697f04c49930d9b56ee"
+    },
+    {
+      "id": "spinkick",
+      "name": "Spinkick",
+      "video": "assets/spinkick.mp4",
+      "poster": "assets/spinkick.jpg",
+      "activeSeconds": 1.710451361,
+      "seed": 43,
+      "iteration": 75,
+      "sha256": "c3b944bee6527d633059def5ca92f2196c5f405e8904477ac325d94432922757"
+    },
+    {
+      "id": "backflip",
+      "name": "Backflip",
+      "video": "assets/backflip.mp4",
+      "poster": "assets/backflip.jpg",
+      "activeSeconds": 2.8165317450000003,
+      "seed": 43,
+      "iteration": 125,
+      "sha256": "aec0150502750f8724c3e70a282a9b5a64632cdc590383d63bb5714b0e875b5a"
+    }
+  ]
+}
