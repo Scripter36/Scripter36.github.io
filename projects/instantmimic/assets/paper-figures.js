@@ -346,7 +346,7 @@
         note.style.opacity = String(clamp(index ? this.position * 2 - 1 : 1 - this.position * 2));
         note.setAttribute('aria-hidden', String(index !== this.target));
       });
-      this.label.textContent = this.target ? 'InstantMimic' : 'Reference (Isaac Lab)';
+      this.label.textContent = this.target ? 'InstantMimic' : 'Isaac Lab';
       const throughput = this.target ? data.profile.optimizedKfps : data.profile.baselineKfps;
       const approximate = this.target && data.profile.optimizedKfpsApproximate;
       this.value.textContent = `${approximate ? '≈' : ''}${throughput} kFPS`;

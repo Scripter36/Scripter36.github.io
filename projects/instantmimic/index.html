@@ -55,9 +55,9 @@
   <link rel="stylesheet" href="/assets/project-page/css/nerfies.css">
   <link rel="stylesheet" href="./assets/demo.css?v=10166a0e3d">
   <script defer src="./assets/demo.js?v=37778aa38d"></script>
-  <link rel="stylesheet" href="./assets/paper-figures.css?v=ad615b5010">
+  <link rel="stylesheet" href="./assets/paper-figures.css?v=9294f08ee7">
   <link rel="stylesheet" href="./assets/typography.css?v=834f25223f">
-  <script defer src="./assets/paper-figures.js?v=a9346f0422"></script>
+  <script defer src="./assets/paper-figures.js?v=dd5e5a7ea4"></script>
   <link rel="icon" href="/assets/project-page/images/favicon.svg">
 
   <script defer src="/assets/project-page/js/fontawesome.all.min.js"></script>
@@ -322,19 +322,20 @@
         <figure class="paper-figure" data-interactive-figure="profile">
           <div data-figure-fallback class="paper-figure__fallback">
             <div class="paper-figure__summary">
-              <span>Reference (Isaac Lab)<strong>105 kFPS</strong></span>
+              <span>Isaac Lab<strong>105 kFPS</strong></span>
               <span>InstantMimic<strong>≈760 kFPS</strong></span>
+              <span>mjlab<strong>157 kFPS</strong></span>
             </div>
-            <img src="./assets/training-profile.svg" alt="InstantMimic rollout phases and GPU utilization, with reference step duration normalized to 100 percent." width="763" height="360" loading="lazy">
+            <img src="./assets/training-profile.svg" alt="InstantMimic rollout phases and GPU utilization, with baseline step duration normalized to 100 percent." width="763" height="360" loading="lazy">
           </div>
           <div data-figure-stage class="paper-figure__stage" hidden>
             <div class="paper-figure__tabs" role="tablist" aria-label="Training loop implementation">
               <span class="paper-figure__tab-indicator" data-tab-indicator aria-hidden="true"></span>
-              <button type="button" role="tab" id="profile-reference-tab" aria-controls="profile-panel" aria-selected="true" tabindex="0" data-profile-tab>Reference</button>
+              <button type="button" role="tab" id="profile-reference-tab" aria-controls="profile-panel" aria-selected="true" tabindex="0" data-profile-tab>Baseline</button>
               <button type="button" role="tab" id="profile-instantmimic-tab" aria-controls="profile-panel" aria-selected="false" tabindex="-1" data-profile-tab>InstantMimic</button>
             </div>
             <div role="tabpanel" id="profile-panel" aria-labelledby="profile-reference-tab" tabindex="0">
-              <div class="paper-figure__summary"><span data-figure-label>Reference (Isaac Lab)</span><strong data-figure-value>105 kFPS</strong></div>
+              <div class="paper-figure__summary"><span><span data-figure-label>Isaac Lab</span><strong data-figure-value>105 kFPS</strong></span><span class="paper-figure__comparison">mjlab <b>157 kFPS</b></span></div>
               <div class="paper-figure__notes" aria-label="Comparison findings">
                 <div data-profile-notes="reference">
                   <p>Non-physics work takes 67% of the step.</p>
@@ -345,7 +346,7 @@
                   <p>GPU utilization stays high through the step.</p>
                 </div>
               </div>
-              <div class="paper-figure__plot"><svg data-plot="profile" role="img" aria-label="Rollout phases and GPU utilization from 0 to 100 percent, on a relative time scale with reference duration at 100 percent" aria-describedby="training-profile-caption"></svg></div>
+              <div class="paper-figure__plot"><svg data-plot="profile" role="img" aria-label="Rollout phases and GPU utilization from 0 to 100 percent, on a relative time scale with baseline duration at 100 percent" aria-describedby="training-profile-caption"></svg></div>
               <div class="paper-figure__legend" aria-label="Training phases">
               <span><i style="--series-color:#B9A0CC" aria-hidden="true"></i>Policy</span>
               <span><i style="--series-color:#8EC1FF" aria-hidden="true"></i>Physics</span>
@@ -356,7 +357,7 @@
             </div>
             <span class="paper-figure__sr" role="status" data-figure-live></span>
           </div>
-          <figcaption id="training-profile-caption">Throughput covers rollout collection and PPO updates: the paper’s Reference result and the current InstantMimic runtime. The duration scales with training throughput; phase proportions and utilization traces follow the paper’s profile.</figcaption>
+          <figcaption id="training-profile-caption">Throughput covers rollout collection and PPO updates. Duration scales with training throughput; phase proportions and utilization traces follow the paper’s profile.</figcaption>
         </figure>
       </div>
     </div>

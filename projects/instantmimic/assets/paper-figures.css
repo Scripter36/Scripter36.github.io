@@ -52,3 +52,6 @@
 .paper-figure__notes { display: grid; margin: .5rem 0 1.25rem; color: #30383d; font-size: 1rem; line-height: 1.5; text-align: center; }
 .paper-figure__notes > div { grid-area: 1 / 1; }
 .paper-figure__notes p { margin: 0; }
+
+.paper-figure__comparison { color: #626b70; font-size: .95rem; }
+.paper-figure__comparison b { margin-left: .4rem; font-weight: 500; font-variant-numeric: tabular-nums; }
