@@ -1,3 +1,4 @@
+.motion-demo-section > .container { width: 100%; min-width: 0; }
 .motion-demo { max-width: 680px; margin: 0 auto; color: #292d31; }
 .motion-demo button { font: inherit; cursor: pointer; }
 .motion-demo button:focus-visible, .motion-demo:focus-visible { outline: 3px solid #237e9d; outline-offset: 4px; }
@@ -43,3 +44,18 @@
 @media (prefers-reduced-motion: reduce) {
   .motion-demo *, .motion-demo *::before, .motion-demo *::after { scroll-behavior: auto !important; transition: none !important; }
 }
+
+.motion-demo__viewport { overflow: hidden; margin-inline: -12px; touch-action: pan-y; }
+.motion-demo__rail { display: flex; transform: translateX(-100%); }
+.motion-demo:not([data-enhanced]) .motion-demo__rail { display: block; transform: none; }
+.motion-demo__card { flex: 0 0 100%; min-width: 0; padding: 0 12px; box-sizing: border-box; }
+.motion-demo__card-progress { align-items: center; gap: .75rem; margin-top: .7rem; }
+.motion-demo__card-progress progress { flex: 1; width: 100%; height: 4px; background: #e5e9eb; accent-color: #477d8e; }
+.motion-demo__card-progress progress::-webkit-progress-bar { background: #e5e9eb; }
+.motion-demo__card-progress progress::-webkit-progress-value { background: #477d8e; }
+.motion-demo__card-progress progress::-moz-progress-bar { background: #477d8e; }
+.motion-demo__card-progress span { font-size: .75rem; color: #697278; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.motion-demo__controls button { display: inline-flex; align-items: center; justify-content: center; padding: .6rem; }
+.motion-demo__controls > div { display: flex; gap: .4rem; }
+.motion-demo__icon { display: block; width: 20px; height: 20px; }
+.motion-demo__icon[hidden] { display: none; }

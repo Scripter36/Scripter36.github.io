@@ -3,3 +3,8 @@ License notice
 The InstantMimic paper PDF and paper-derived figures in this directory are
 not covered by the repository's MIT License. Other files remain subject to
 the licenses and attribution notices applicable to their respective sources.
+
+Phosphor Icons
+Regular SVG icons in assets/phosphor are from phosphor-icons/core.
+Copyright (c) 2023 Phosphor Icons. Licensed under the MIT License;
+see assets/phosphor/LICENSE and assets/phosphor/README.md.

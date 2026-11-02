@@ -186,32 +186,45 @@
   </div>
 </section>
 
-<section class="hero teaser">
+<section class="hero teaser motion-demo-section">
   <div class="container is-max-desktop">
     <div class="hero-body">
       <div id="motion-demo" class="motion-demo" tabindex="0" aria-label="Motion learning demonstration">
-        <div class="motion-demo__heading">
-          <h2 class="motion-demo__title" data-title>Walk</h2>
-          <div class="motion-demo__time"><strong data-time>1.36 s</strong><span>active training</span></div>
-        </div>
-        <div class="motion-demo__stage" data-stage>
-          <video controls muted playsinline preload="auto" poster="./assets/walk.jpg" aria-label="Learned motion playback">
-            <source src="./assets/walk.mp4" type="video/mp4">
-            <a href="./assets/walk.mp4">Watch the walk video</a>
-          </video>
-          <div class="motion-demo__overlay" data-overlay>
-            <strong data-message>Training…</strong>
-            <progress value="0" max="1.36376232" aria-label="Measured active training time"></progress>
-            <span class="motion-demo__elapsed" data-elapsed aria-hidden="true">0.00 / 1.36 s</span>
+        <div class="motion-demo__viewport" data-viewport>
+          <div class="motion-demo__rail" data-rail>
+            <article class="motion-demo__card" data-card role="group" aria-roledescription="slide" aria-label="Walk">
+              <div class="motion-demo__heading">
+                <h2 class="motion-demo__title" data-title>Walk</h2>
+                <div class="motion-demo__time"><strong data-time>1.36 s</strong><span>active training</span></div>
+              </div>
+              <div class="motion-demo__stage" data-stage>
+                <video controls muted playsinline preload="auto" poster="./assets/walk.jpg" aria-label="Learned motion playback">
+                  <source src="./assets/walk.mp4" type="video/mp4">
+                  <a href="./assets/walk.mp4">Watch the walk video</a>
+                </video>
+                <div class="motion-demo__overlay" data-overlay>
+                  <strong data-message>Training…</strong>
+                  <progress data-training-progress value="0" max="1.36376232" aria-label="Measured active training time"></progress>
+                  <span class="motion-demo__elapsed" data-elapsed aria-hidden="true">0.00 / 1.36 s</span>
+                </div>
+              </div>
+              <div class="motion-demo__card-progress motion-demo__enhanced">
+                <progress data-card-progress value="0" max="6.36376232" aria-label="Walk card progress"></progress>
+                <span data-card-elapsed aria-hidden="true">0.0 / 6.4 s</span>
+              </div>
+            </article>
           </div>
         </div>
         <div class="motion-demo__controls motion-demo__enhanced">
-          <button type="button" data-prev aria-label="Previous motion">&#8592;</button>
+          <button type="button" data-prev aria-label="Previous motion" title="Previous motion"><img class="motion-demo__icon" src="./assets/phosphor/caret-left.svg" width="20" height="20" alt=""></button>
           <div>
-            <button type="button" data-pause aria-label="Pause demo">Pause</button>
-            <button type="button" data-replay>Replay</button>
+            <button type="button" data-pause aria-label="Pause demo" title="Pause">
+              <img class="motion-demo__icon" data-pause-icon src="./assets/phosphor/pause.svg" width="20" height="20" alt="">
+              <img class="motion-demo__icon" data-play-icon src="./assets/phosphor/play.svg" width="20" height="20" alt="" hidden>
+            </button>
+            <button type="button" data-replay aria-label="Replay motion" title="Replay"><img class="motion-demo__icon" src="./assets/phosphor/arrow-counter-clockwise.svg" width="20" height="20" alt=""></button>
           </div>
-          <button type="button" data-next aria-label="Next motion">&#8594;</button>
+          <button type="button" data-next aria-label="Next motion" title="Next motion"><img class="motion-demo__icon" src="./assets/phosphor/caret-right.svg" width="20" height="20" alt=""></button>
         </div>
         <nav class="motion-demo__motions motion-demo__enhanced" aria-label="Choose a motion">
           <button type="button" data-motion aria-pressed="true">Walk</button>
@@ -243,7 +256,10 @@
           <p>Active time includes rollout collection and PPO updates. It excludes initialization,
             compile setup, evaluation, checkpoint saving, and recording.
             These examples are individual runs, not three-seed medians.
-            All clips are 10-second rollouts at normal playback speed.</p>
+            The carousel shows the first five seconds of each rollout at normal playback speed.
+            The card progress bar covers the training time replay and those five seconds.</p>
+          <p>Full 10-second videos: <a href="./assets/walk.mp4">Walk</a>,
+            <a href="./assets/spinkick.mp4">spinkick</a>, and <a href="./assets/backflip.mp4">backflip</a>.</p>
           <p>See the <a href="https://github.com/Scripter36/InstantMimic/blob/HEAD/docs/reference/motion-demo.md">configs and measurement details</a>.</p>
         </details>
       </div>
