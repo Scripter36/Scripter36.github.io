@@ -136,7 +136,8 @@
     const bars = node(svg, 'g', {'clip-path': `url(#${clipId})`});
     const baselineTotals = phases.reduce((sum, p) => sum + p.baseline, 0);
     const optimizedTotals = phases.reduce((sum, p) => sum + p.optimized, 0);
-    const optimizedBarCount = Math.ceil(data.profile.optimizedTimePercent / data.profile.timeBinPercent);
+    const optimizedTimePercent = 100 * data.profile.baselineKfps / data.profile.optimizedKfps;
+    const optimizedBarCount = Math.ceil(optimizedTimePercent / data.profile.timeBinPercent);
     const binWidth = span * data.profile.timeBinPercent / 100;
     const samples = series.map(item => item.baseline.map((value, i) => {
       const oi = Math.round(i / (optimizedBarCount - 1) * (item.optimized.length - 1));
@@ -144,12 +145,12 @@
         baseline: value, optimized: i < optimizedBarCount ? item.optimized[oi] : 0};
     }));
     return (progress, highlight) => {
-      const step = mix(data.profile.baselineTimePercent, data.profile.optimizedTimePercent, progress);
+      const step = mix(data.profile.baselineTimePercent, optimizedTimePercent, progress);
       const end = x(step);
       let cursor = box.left;
       for (const phase of phases) {
         const w = mix(span * data.profile.baselineTimePercent / 100 * phase.baseline / baselineTotals,
-          span * data.profile.optimizedTimePercent / 100 * phase.optimized / optimizedTotals, progress);
+          span * optimizedTimePercent / 100 * phase.optimized / optimizedTotals, progress);
         // Keep separators within each phase's time slot, including narrow phases.
         const visibleWidth = w - Math.min(2, w * .2);
         set(phase.rect, {x: cursor, width: visibleWidth, opacity: phase.name === 'Physics' ? 1 - .45 * highlight : 1});
