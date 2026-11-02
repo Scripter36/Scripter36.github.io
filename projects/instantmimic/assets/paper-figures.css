@@ -1,0 +1,10 @@
+.paper-figure { margin: 1.75rem 0 0; }
+.paper-figure video { display: block; width: 100%; height: auto; aspect-ratio: 64 / 31; background: #fff; }
+.paper-figure figcaption { margin-top: .75rem; color: #626b70; font-size: .9rem; line-height: 1.6; }
+.paper-figure__controls { display: none; justify-content: flex-end; gap: .25rem; margin-top: .25rem; }
+.paper-figure[data-enhanced] .paper-figure__controls { display: flex; }
+.paper-figure__controls button { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 0; border-radius: 6px; background: transparent; color: #414b50; cursor: pointer; }
+.paper-figure__controls button:hover { background: #f0f3f4; }
+.paper-figure__controls button:focus-visible { outline: 3px solid #237e9d; outline-offset: 2px; }
+.paper-figure__controls img { width: 20px; height: 20px; }
+.paper-figure__controls [hidden] { display: none; }

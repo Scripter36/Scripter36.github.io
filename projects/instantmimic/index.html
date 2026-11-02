@@ -55,6 +55,8 @@
   <link rel="stylesheet" href="/assets/project-page/css/nerfies.css">
   <link rel="stylesheet" href="./assets/demo.css?v=7ba1aa7148">
   <script defer src="./assets/demo.js?v=37778aa38d"></script>
+  <link rel="stylesheet" href="./assets/paper-figures.css?v=76a543fd67">
+  <script defer src="./assets/paper-figures.js?v=94bbb2452d"></script>
   <link rel="icon" href="/assets/project-page/images/favicon.svg">
 
   <script defer src="/assets/project-page/js/fontawesome.all.min.js"></script>
@@ -310,6 +312,66 @@
             Physics-based character control is a long-standing challenge in computer graphics and robotics, requiring policies that satisfy complex dynamics while producing realistic motion. Recent Deep RL approaches, particularly imitation learning methods such as DeepMimic, have had broad impact beyond animation, influencing robotics by enabling agile and expressive behaviors. While these approaches achieve impressive results, they remain computationally inefficient to train in practice. Despite GPU-accelerated simulation, we find that end-to-end pipelines often underutilize hardware due to overheads outside the physics solver, caused by fragmented GPU kernels and CPU memory access in the critical path. We present InstantMimic, a system that addresses these inefficiencies by making the entire training loop GPU-native. Built on a GPU-native physics backend, our unified pipeline integrates simulation, environment computation, policy inference, and policy updates within a single execution flow. As a result, InstantMimic compresses training for diverse physics-based skills to a few seconds, and makes LLM-agent-driven hyperparameter search practical.
           </p>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="gpu-native-loop">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3 has-text-centered">A GPU-native training loop</h2>
+        <p>In the reference implementation, most of a rollout step is spent outside physics.
+          InstantMimic keeps the full loop on the GPU, reducing overhead between simulation,
+          reward evaluation, resets, and observation construction.</p>
+        <figure class="paper-figure" data-paper-figure>
+          <video controls muted playsinline preload="metadata" width="1920" height="930"
+                 poster="./assets/training-profile.jpg?v=1f514d1471" aria-label="GPU profiling timeline before and after optimization" aria-describedby="training-profile-caption">
+            <source src="./assets/training-profile.mp4?v=c814e62eb7" type="video/mp4">
+            <a href="./assets/training-profile.mp4">Watch the animation</a>.
+          </video>
+          <div class="paper-figure__controls">
+            <button type="button" data-figure-toggle aria-label="Play animation" title="Play animation">
+              <img data-play-icon src="./assets/phosphor/play.svg" alt="" width="20" height="20">
+              <img data-pause-icon src="./assets/phosphor/pause.svg" alt="" width="20" height="20" hidden>
+            </button>
+            <button type="button" data-figure-replay aria-label="Replay animation" title="Replay animation">
+              <img src="./assets/phosphor/arrow-counter-clockwise.svg" alt="" width="20" height="20">
+            </button>
+          </div>
+          <figcaption id="training-profile-caption">A rollout step drops from 14.878 ms to 3.033 ms in the paper’s profiling experiment. The animation uses a fixed time scale to show the reduction in overhead; the transition between measured endpoints is illustrative.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="autoresearch">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3 has-text-centered">LLM-guided hyperparameter search</h2>
+        <p>Short training runs let an LLM agent test configurations, inspect the results,
+          and revise its search. In the paper’s backflip experiment, 80 optimization cycles
+          reduce active training time from 18.77 s to 2.17 s.</p>
+        <figure class="paper-figure" data-paper-figure>
+          <video controls muted playsinline preload="metadata" width="1920" height="930"
+                 poster="./assets/autoresearch.jpg?v=ea94a5f215" aria-label="Best backflip training time across 80 LLM-guided optimization cycles" aria-describedby="autoresearch-caption">
+            <source src="./assets/autoresearch.mp4?v=6f248c0b49" type="video/mp4">
+            <a href="./assets/autoresearch.mp4">Watch the animation</a>.
+          </video>
+          <div class="paper-figure__controls">
+            <button type="button" data-figure-toggle aria-label="Play animation" title="Play animation">
+              <img data-play-icon src="./assets/phosphor/play.svg" alt="" width="20" height="20">
+              <img data-pause-icon src="./assets/phosphor/pause.svg" alt="" width="20" height="20" hidden>
+            </button>
+            <button type="button" data-figure-replay aria-label="Replay animation" title="Replay animation">
+              <img src="./assets/phosphor/arrow-counter-clockwise.svg" alt="" width="20" height="20">
+            </button>
+          </div>
+          <figcaption id="autoresearch-caption">The curve shows the best active training time found so far to reach 90% success, measured as a three-seed median. These are paper results, separate from the individual motion runs shown above. See the <a href="https://arxiv.org/pdf/2609.09821">paper and appendix</a> for the experiment settings.</figcaption>
+        </figure>
       </div>
     </div>
   </div>
