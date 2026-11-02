@@ -106,7 +106,7 @@
     const margin = compact ? 12 : yAxisMargin(svg, [0, 50, 100], 'GPU util. (%)');
     const box = {left: margin, right: width - margin, top: 176, bottom: 284};
     const span = box.right - box.left;
-    const x = ms => box.left + span * ms / 15;
+    const x = percent => box.left + span * percent / 100;
     const y = value => box.bottom - (box.bottom - box.top) * value / 100;
     text(svg, box.left, 24, 'Training-step phases', {class: 'plot-heading'});
     const phases = data.profile.phases.map(phase => ({
@@ -130,25 +130,26 @@
       item.label.setAttribute('x', legendX + 15);
       legendX += legendWidths[index] + 16;
     });
-    axes(svg, box, [0, 3, 6, 9, 12, 15], [0, 50, 100], 'Time (ms)', 'GPU util. (%)', x, y, {hideYAxis: compact});
+    axes(svg, box, [0, 20, 40, 60, 80, 100], [0, 50, 100], 'Relative step time (%)', 'GPU util. (%)', x, y, {hideYAxis: compact});
     const clipId = `profile-duration-${++nextId}`;
     const clip = node(node(node(svg, 'defs'), 'clipPath', {id: clipId}), 'rect', {x: box.left, y: box.top, height: box.bottom - box.top});
     const bars = node(svg, 'g', {'clip-path': `url(#${clipId})`});
     const baselineTotals = phases.reduce((sum, p) => sum + p.baseline, 0);
     const optimizedTotals = phases.reduce((sum, p) => sum + p.optimized, 0);
-    const optimizedBarCount = Math.ceil(100 * data.profile.optimizedMs / 15);
+    const optimizedBarCount = Math.ceil(data.profile.optimizedTimePercent / data.profile.timeBinPercent);
+    const binWidth = span * data.profile.timeBinPercent / 100;
     const samples = series.map(item => item.baseline.map((value, i) => {
       const oi = Math.round(i / (optimizedBarCount - 1) * (item.optimized.length - 1));
-      return {rect: node(bars, 'rect', {x: box.left + i * span / 100 + .3, width: Math.max(.6, span / 100 - .6), fill: item.color, opacity: .9}),
+      return {rect: node(bars, 'rect', {x: box.left + i * binWidth + .3, width: Math.max(.6, binWidth - .6), fill: item.color, opacity: .9}),
         baseline: value, optimized: i < optimizedBarCount ? item.optimized[oi] : 0};
     }));
     return (progress, highlight) => {
-      const step = mix(data.profile.baselineMs, data.profile.optimizedMs, progress);
+      const step = mix(data.profile.baselineTimePercent, data.profile.optimizedTimePercent, progress);
       const end = x(step);
       let cursor = box.left;
       for (const phase of phases) {
-        const w = mix(span * data.profile.baselineMs / 15 * phase.baseline / baselineTotals,
-          span * data.profile.optimizedMs / 15 * phase.optimized / optimizedTotals, progress);
+        const w = mix(span * data.profile.baselineTimePercent / 100 * phase.baseline / baselineTotals,
+          span * data.profile.optimizedTimePercent / 100 * phase.optimized / optimizedTotals, progress);
         // Keep separators within each phase's time slot, including narrow phases.
         const visibleWidth = w - Math.min(2, w * .2);
         set(phase.rect, {x: cursor, width: visibleWidth, opacity: phase.name === 'Physics' ? 1 - .45 * highlight : 1});
@@ -344,8 +345,9 @@
         note.style.opacity = String(clamp(index ? this.position * 2 - 1 : 1 - this.position * 2));
         note.setAttribute('aria-hidden', String(index !== this.target));
       });
-      this.label.textContent = this.target ? 'InstantMimic' : 'Reference implementation';
-      this.value.textContent = `${mix(data.profile.baselineMs, data.profile.optimizedMs, this.position).toFixed(3)} ms`;
+      this.label.textContent = this.target ? 'InstantMimic' : 'Reference (Isaac Lab)';
+      const throughput = this.target ? data.profile.optimizedKfps : data.profile.baselineKfps;
+      this.value.textContent = `${throughput} kFPS`;
       this.root.dataset.state = this.playing ? 'transitioning' : this.target ? 'optimized' : 'reference';
       this.tabs.forEach((tab, index) => {
         tab.setAttribute('aria-selected', String(index === this.target));
@@ -353,7 +355,7 @@
       });
       this.panel.setAttribute('aria-labelledby', this.tabs[this.target].id);
       const finding = this.notes[this.target].textContent.trim().replace(/\s+/g, ' ');
-      this.announce(this.playing ? '' : `${this.label.textContent}. A rollout step takes ${this.value.textContent}. ${finding}`);
+      this.announce(this.playing ? '' : `${this.label.textContent}. Training throughput is ${throughput} thousand frames per second. ${finding}`);
     }
   }
   class SearchComparison extends Figure {
