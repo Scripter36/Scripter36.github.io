@@ -24,7 +24,7 @@
       3 * oneMinusT ** 2 * t * points[1] +
       3 * oneMinusT * t ** 2 * points[2] +
       t ** 3 * points[3]
-);
+    );
   };
 
   const valueOnSegment = (segment, x) => {
@@ -80,27 +80,32 @@
     svg.style.aspectRatio = `${width} / ${height}`;
   }
   function profileGraph(svg, width) {
-    prepare(svg, width, 408);
-    const box = {left: 53, right: width - 82, top: 224, bottom: 332};
+    prepare(svg, width, 360);
+    const box = {left: 53, right: width - 53, top: 176, bottom: 284};
     const span = box.right - box.left;
     const x = ms => box.left + span * ms / 15;
     const y = value => box.bottom - (box.bottom - box.top) * value / 100;
     text(svg, box.left, 24, 'Training-step phases', {class: 'plot-heading'});
     const phases = data.profile.phases.map(phase => ({
       ...phase,
-      rect: node(svg, 'rect', {y: 45, height: 64, fill: phase.color}),
+      rect: node(svg, 'rect', {y: 45, height: 64, fill: phase.color, 'data-phase-fill': phase.name}),
       label: text(svg, 0, 83, phase.name, {'text-anchor': 'middle', class: 'phase-label'}),
-      outline: node(svg, 'rect', {y: 46, height: 62, fill: 'none', stroke: '#424b50', 'stroke-width': 1.5}),
+      outline: node(svg, 'rect', {y: 46, height: 62, fill: 'none', stroke: '#424b50', 'stroke-width': 1, 'data-phase-outline': phase.name}),
     }));
-    const duration = text(svg, 0, 82, '', {class: 'plot-value'});
-    const diagnosis = text(svg, width / 2, 140, 'Non-physics work takes 67% of the step.', {'text-anchor': 'middle', class: 'plot-note'});
-    const finding = text(svg, width / 2, 160, 'Low GPU utilization outside physics.', {'text-anchor': 'middle', class: 'plot-note'});
-    text(svg, box.left, 193, 'GPU utilization', {class: 'plot-heading'});
+    for (const phase of phases) phase.labelWidth = phase.label.getComputedTextLength() + 8;
+    text(svg, box.left, 145, 'GPU utilization', {class: 'plot-heading'});
     const series = data.profile.series;
-    series.forEach((item, i) => {
-      const lx = box.left + i * 83;
-      node(svg, 'rect', {x: lx, y: 204, width: 10, height: 8, fill: item.color});
-      text(svg, lx + 15, 212, item.name, {class: 'plot-legend'});
+    const legend = series.map(item => ({
+      rect: node(svg, 'rect', {y: 156, width: 10, height: 8, fill: item.color}),
+      label: text(svg, 0, 164, item.name, {class: 'plot-legend'}),
+    }));
+    const legendWidths = legend.map(item => item.label.getComputedTextLength() + 15);
+    const legendWidth = legendWidths.reduce((sum, value) => sum + value, 0) + (legend.length - 1) * 16;
+    let legendX = Math.min(box.left, Math.max(0, (width - legendWidth) / 2));
+    legend.forEach((item, index) => {
+      item.rect.setAttribute('x', legendX);
+      item.label.setAttribute('x', legendX + 15);
+      legendX += legendWidths[index] + 16;
     });
     axes(svg, box, [0, 3, 6, 9, 12, 15], [0, 50, 100], 'Time (ms)', 'GPU util. (%)', x, y);
     const clipId = `profile-duration-${++nextId}`;
@@ -121,15 +126,14 @@
       for (const phase of phases) {
         const w = mix(span * data.profile.baselineMs / 15 * phase.baseline / baselineTotals,
           span * data.profile.optimizedMs / 15 * phase.optimized / optimizedTotals, progress);
-        set(phase.rect, {x: cursor, width: Math.max(0, w - 1), opacity: phase.name === 'Physics' ? 1 - .45 * highlight : 1});
-        set(phase.label, {x: cursor + w / 2, opacity: w > phase.name.length * 6.5 + 6 ? 1 : 0});
-        set(phase.outline, {x: cursor, width: Math.max(0, w - 1), opacity: phase.name === 'Physics' ? 0 : highlight});
+        // Keep separators within each phase's time slot, including narrow phases.
+        const visibleWidth = w - Math.min(2, w * .2);
+        set(phase.rect, {x: cursor, width: visibleWidth, opacity: phase.name === 'Physics' ? 1 - .45 * highlight : 1});
+        set(phase.label, {x: cursor + visibleWidth / 2, opacity: visibleWidth > phase.labelWidth ? 1 : 0});
+        // Insets keep the highlight stroke inside the fill rather than joining its neighbours.
+        set(phase.outline, {x: cursor + 1, width: Math.max(0, visibleWidth - 2), opacity: phase.name === 'Physics' || visibleWidth < 4 ? 0 : .6 * highlight});
         cursor += w;
       }
-      set(duration, {x: end + 7});
-      duration.textContent = `${step.toFixed(3)} ms`;
-      diagnosis.setAttribute('opacity', highlight);
-      finding.setAttribute('opacity', highlight);
       clip.setAttribute('width', end - box.left);
       for (const group of samples) for (const sample of group) {
         const value = Math.min(100, mix(sample.baseline, sample.optimized, progress) * 100 / 73);
@@ -239,6 +243,8 @@
       this.target = 0;
       this.tabs = [...root.querySelectorAll('[data-profile-tab]')];
       this.panel = root.querySelector('[role="tabpanel"]');
+      this.indicator = root.querySelector('[data-tab-indicator]');
+      this.notes = [...root.querySelectorAll('[data-profile-notes]')];
       this.tabs.forEach((tab, index) => {
         tab.addEventListener('click', () => this.select(index));
         tab.addEventListener('keydown', event => {
@@ -250,22 +256,50 @@
         });
       });
       this.mount();
+      // Tab widths can also change when a web font finishes loading.
+      for (const tab of this.tabs) this.resizeObserver.observe(tab);
     }
     resize() {
+      const tabListElement = this.tabs[0].parentElement;
+      const tabList = tabListElement.getBoundingClientRect();
+      this.tabScale = tabList.width / parseFloat(getComputedStyle(tabListElement).width);
+      this.tabBounds = this.tabs.map(tab => {
+        const bounds = tab.getBoundingClientRect();
+        return {left: (bounds.left - tabList.left) / this.tabScale, width: bounds.width / this.tabScale};
+      });
+      this.moveIndicator(false);
       const svg = this.root.querySelector('[data-plot]');
-      this.draw = profileGraph(svg, Math.max(300, svg.parentElement.clientWidth));
+      this.draw = profileGraph(svg, Math.max(240, svg.parentElement.clientWidth));
       this.render();
     }
     select(target) {
       if (target === this.target) return;
       this.from = this.position;
       this.target = target;
+      this.moveIndicator(true);
       this.elapsed = 0;
       this.duration = 1000 * Math.abs(target - this.from);
       this.previous = null;
       this.playing = !reducedMotion.matches && this.duration >= 1;
       if (!this.playing) this.position = target;
       this.sync();
+    }
+    moveIndicator(animate) {
+      const target = this.tabBounds[this.target];
+      const current = this.indicator.getBoundingClientRect();
+      const tabList = this.tabs[0].parentElement.getBoundingClientRect();
+      const from = {left: (current.left - tabList.left) / this.tabScale, width: current.width / this.tabScale};
+      this.indicatorAnimation?.cancel();
+      this.indicator.style.transform = `translateX(${target.left}px)`;
+      this.indicator.style.width = `${target.width}px`;
+      if (!animate || reducedMotion.matches) return;
+      // Sample the original easing for a brisk 240 ms pill transition.
+      const frames = Array.from({length: 61}, (_, index) => {
+        const offset = index / 60;
+        const progress = material3Emphasized(offset);
+        return {offset, transform: `translateX(${mix(from.left, target.left, progress)}px)`, width: `${mix(from.width, target.width, progress)}px`};
+      });
+      this.indicatorAnimation = this.indicator.animate(frames, {duration: 240, easing: 'linear'});
     }
     advance(delta) {
       this.elapsed += delta;
@@ -274,12 +308,17 @@
       if (progress === 1) this.playing = false;
     }
     reduceMotion() {
+      this.moveIndicator(false);
       this.position = this.target;
       this.playing = false;
       this.sync();
     }
     render() {
       this.draw(this.position, 1 - this.position);
+      this.notes.forEach((note, index) => {
+        note.style.opacity = String(clamp(index ? this.position * 2 - 1 : 1 - this.position * 2));
+        note.setAttribute('aria-hidden', String(index !== this.target));
+      });
       this.label.textContent = this.target ? 'InstantMimic' : 'Reference implementation';
       this.value.textContent = `${mix(data.profile.baselineMs, data.profile.optimizedMs, this.position).toFixed(3)} ms`;
       this.root.dataset.state = this.playing ? 'transitioning' : this.target ? 'optimized' : 'reference';
@@ -288,7 +327,8 @@
         tab.tabIndex = index === this.target ? 0 : -1;
       });
       this.panel.setAttribute('aria-labelledby', this.tabs[this.target].id);
-      this.announce(this.playing ? '' : `${this.label.textContent}. A rollout step takes ${this.value.textContent}.`);
+      const finding = this.notes[this.target].textContent.trim().replace(/\s+/g, ' ');
+      this.announce(this.playing ? '' : `${this.label.textContent}. A rollout step takes ${this.value.textContent}. ${finding}`);
     }
   }
   class SearchComparison extends Figure {
@@ -329,9 +369,9 @@
     }
     resize() {
       const svg = this.root.querySelector('[data-plot="search"]');
-      this.drawSearch = searchGraph(svg, Math.max(300, svg.parentElement.clientWidth));
+      this.drawSearch = searchGraph(svg, Math.max(240, svg.parentElement.clientWidth));
       const learning = this.root.querySelector('[data-plot="learning"]');
-      this.drawLearning = learningGraph(learning, Math.max(280, learning.parentElement.clientWidth));
+      this.drawLearning = learningGraph(learning, Math.max(240, learning.parentElement.clientWidth));
       this.render();
     }
     seek(position) {
@@ -355,12 +395,13 @@
     }
     advance(delta) {
       const oldCycle = this.position * 80;
-      // Like the source film, optimization cycles advance linearly in time.
-      this.position = clamp(this.position + delta / 8000);
+      // Keep the source's linear cycle progression, replayed at 1.5x speed.
+      const elapsed = delta * 1.5;
+      this.position = clamp(this.position + elapsed / 8000);
       const cycle = this.position * 80;
       if (cycle >= 65 && this.reveal < 1) {
         // Only time after the winning configuration is found reveals its curve.
-        this.revealElapsed += Math.min(delta, (cycle - Math.max(oldCycle, 65)) * 100);
+        this.revealElapsed += Math.min(elapsed, (cycle - Math.max(oldCycle, 65)) * 100);
         this.reveal = reducedMotion.matches ? 1 : material3Emphasized(clamp(this.revealElapsed / 1000));
       }
       if (this.position === 1) {

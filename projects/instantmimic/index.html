@@ -55,8 +55,8 @@
   <link rel="stylesheet" href="/assets/project-page/css/nerfies.css">
   <link rel="stylesheet" href="./assets/demo.css?v=7ba1aa7148">
   <script defer src="./assets/demo.js?v=37778aa38d"></script>
-  <link rel="stylesheet" href="./assets/paper-figures.css?v=2d1441d7d3">
-  <script defer src="./assets/paper-figures.js?v=dc97021ba9"></script>
+  <link rel="stylesheet" href="./assets/paper-figures.css?v=ad615b5010">
+  <script defer src="./assets/paper-figures.js?v=45ddd00ae6"></script>
   <link rel="icon" href="/assets/project-page/images/favicon.svg">
 
   <script defer src="/assets/project-page/js/fontawesome.all.min.js"></script>
@@ -330,11 +330,22 @@
           </div>
           <div data-figure-stage class="paper-figure__stage" hidden>
             <div class="paper-figure__tabs" role="tablist" aria-label="Training loop implementation">
+              <span class="paper-figure__tab-indicator" data-tab-indicator aria-hidden="true"></span>
               <button type="button" role="tab" id="profile-reference-tab" aria-controls="profile-panel" aria-selected="true" tabindex="0" data-profile-tab>Reference</button>
               <button type="button" role="tab" id="profile-instantmimic-tab" aria-controls="profile-panel" aria-selected="false" tabindex="-1" data-profile-tab>InstantMimic</button>
             </div>
             <div role="tabpanel" id="profile-panel" aria-labelledby="profile-reference-tab" tabindex="0">
               <div class="paper-figure__summary"><span data-figure-label>Reference implementation</span><strong data-figure-value>14.878 ms</strong></div>
+              <div class="paper-figure__notes" aria-label="Comparison findings">
+                <div data-profile-notes="reference">
+                  <p>Non-physics work takes 67% of the step.</p>
+                  <p>Low GPU utilization outside physics.</p>
+                </div>
+                <div data-profile-notes="optimized" aria-hidden="true" style="opacity:0">
+                  <p>Physics takes 91.3% of the step.</p>
+                  <p>GPU utilization stays high through the step.</p>
+                </div>
+              </div>
               <div class="paper-figure__plot"><svg data-plot="profile" role="img" aria-label="Rollout phases and GPU utilization, on a fixed 0 to 15 millisecond time scale" aria-describedby="training-profile-caption"></svg></div>
               <div class="paper-figure__legend" aria-label="Training phases">
               <span><i style="--series-color:#B9A0CC" aria-hidden="true"></i>Policy</span>
