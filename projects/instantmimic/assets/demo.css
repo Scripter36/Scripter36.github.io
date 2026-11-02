@@ -68,3 +68,7 @@
 .motion-demo__card-progress::after { content: ""; position: absolute; left: clamp(5px, var(--position), calc(100% - 5px)); bottom: 0; width: 8px; height: 8px; transform: translateX(-50%); border-radius: 50%; background: rgba(255, 255, 255, .85); opacity: 0; pointer-events: none; }
 .motion-demo__card-progress:hover::after, .motion-demo__card-progress:focus-within::after { opacity: 1; }
 .motion-demo__card-progress:focus-within progress { height: 6px; }
+
+.amass-demo { margin: 1.75rem 0 2.5rem; }
+.amass-demo video { display: block; width: 100%; height: auto; border-radius: 10px; box-shadow: 0 8px 20px -6px rgb(30 45 54 / 20%), 0 2px 6px rgb(30 45 54 / 10%); }
+.amass-demo figcaption { margin-top: .75rem; color: #626b70; font-size: .9rem; line-height: 1.6; }
