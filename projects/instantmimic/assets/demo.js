@@ -11,6 +11,16 @@
   const choices = [...root.querySelectorAll('[data-motion]')];
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const headline = root.querySelector('[data-headline]');
+  function setHeadlineWidth(element, item, animate = false, fromWidth = 0) {
+    element.style.transition = 'none';
+    if (animate) element.style.width = `${fromWidth}px`;
+    else element.style.removeProperty('width');
+    // Commit the starting width; idle text uses its native intrinsic width.
+    element.getBoundingClientRect();
+    element.style.removeProperty('transition');
+    if (animate) element.style.width = `${item.getBoundingClientRect().width}px`;
+  }
+
   const headlineFields = [
     {element: root.querySelector('[data-headline-motion]'), values: motions.map(motion => motion.action)},
     {element: root.querySelector('[data-headline-time]'), values: motions.map(motion => motion.activeSeconds.toFixed(2))}
@@ -19,10 +29,11 @@
       const item = document.createElement('span');
       item.textContent = value;
       item.style.visibility = i === 0 ? 'visible' : 'hidden';
+      item.toggleAttribute('data-current', i === 0);
       return item;
     });
     field.element.replaceChildren(...items);
-    field.element.style.width = `${items[0].getBoundingClientRect().width}px`;
+    setHeadlineWidth(field.element, items[0]);
     return {...field, items, animations: []};
   });
 
@@ -31,9 +42,11 @@
     headlineFields.forEach(field => {
       field.animations.forEach(animation => animation.cancel());
       field.animations = [];
-      field.items.forEach(item => { item.style.visibility = 'hidden'; });
+      const fromWidth = field.element.getBoundingClientRect().width;
+      field.items.forEach(item => { item.style.visibility = 'hidden'; item.removeAttribute('data-current'); });
       const incoming = field.items[next];
-      field.element.style.width = `${incoming.getBoundingClientRect().width}px`;
+      incoming.setAttribute('data-current', '');
+      setHeadlineWidth(field.element, incoming, next !== previous && !reducedMotion, fromWidth);
       incoming.style.visibility = 'visible';
       if (next === previous || reducedMotion) return;
       const outgoing = field.items[previous];
@@ -49,6 +62,7 @@
         outgoing.style.visibility = 'hidden';
         field.animations.forEach(animation => animation.cancel());
         field.animations = [];
+        setHeadlineWidth(field.element, incoming);
       }, {once: true});
     });
   }
@@ -58,7 +72,8 @@
     element.setAttribute('aria-label', motion.name);
     const video = element.querySelector('video');
     video.controls = false;
-    video.preload = 'metadata';
+    video.preload = 'auto';
+    video.muted = true;
     video.poster = motion.poster;
     video.querySelector('source').src = motion.video;
     video.setAttribute('aria-label', `${motion.name} playback`);
@@ -68,14 +83,39 @@
       message: element.querySelector('[data-message]'),
       progress: element.querySelector('[data-training-progress]'),
       elapsed: element.querySelector('[data-elapsed]'),
-      cardProgress: element.querySelector('[data-card-progress]')
+      cardProgress: element.querySelector('[data-card-progress]'),
+      seek: element.querySelector('[data-seek]'),
+      pendingSeek: null
     };
     card.progress.max = motion.activeSeconds;
     card.progress.value = 0;
     card.cardProgress.max = motion.activeSeconds + PLAYBACK_SECONDS;
     card.cardProgress.value = 0;
-    card.cardProgress.setAttribute('aria-label', `${motion.name} card progress`);
+    card.seek.max = card.cardProgress.max;
+    card.seek.value = 0;
+    card.seek.setAttribute('aria-label', `${motion.name} playback position`);
     video.addEventListener('error', () => { if (i === index) showError(); });
+    for (const event of ['loadedmetadata', 'progress', 'canplay', 'seeked']) video.addEventListener(event, () => {
+      flushSeek(card);
+      if (i === index && phase === 'video') playVideo();
+    });
+    video.addEventListener('waiting', () => { if (i === index) scheduleLoading(); });
+    video.addEventListener('playing', () => {
+      if (i !== index || phase !== 'video') return;
+      clearLoading();
+      card.overlay.hidden = true;
+      status.textContent = 'Playback';
+    });
+    card.seek.addEventListener('pointerdown', (event) => {
+      if (i !== index || event.button !== 0) return;
+      scrubbing = true;
+      card.seek.setPointerCapture(event.pointerId);
+      stopVideo();
+    });
+    card.seek.addEventListener('input', () => { if (i === index) seekTo(Number(card.seek.value)); });
+    for (const event of ['pointerup', 'pointercancel', 'lostpointercapture', 'change']) {
+      card.seek.addEventListener(event, () => { if (i === index) finishScrubbing(); });
+    }
     video.addEventListener('ended', () => { if (i === index && active()) selectMotion(index + 1, 1); });
     return card;
   });
@@ -88,8 +128,10 @@
   let previousTick = performance.now();
   let playing = false;
   let animation = null;
+  let scrubbing = false;
+  let loadingTimer = null;
   const current = () => cards[index];
-  const active = () => !paused && inView && !document.hidden && !animation;
+  const active = () => !paused && !scrubbing && inView && !document.hidden && !animation;
   const duration = () => motions[index].activeSeconds * 1000;
   const wrap = value => (value + motions.length) % motions.length;
 
@@ -119,11 +161,85 @@
 
   function updateCardProgress() {
     const card = current();
-    const value = elapsed / 1000 + (phase === 'video' ? Math.min(card.video.currentTime, PLAYBACK_SECONDS) : 0);
+    const videoTime = card.pendingSeek ?? card.video.currentTime;
+    const value = elapsed / 1000 + (phase === 'video' ? Math.min(videoTime, PLAYBACK_SECONDS) : 0);
     card.cardProgress.value = value;
+    card.seek.value = value;
+    card.seek.parentElement.style.setProperty('--position', `${value / card.cardProgress.max * 100}%`);
+    const percentage = phase === 'video' ? videoTime / PLAYBACK_SECONDS : elapsed / duration();
+    card.seek.setAttribute('aria-valuetext', `${phase === 'video' ? 'Video' : 'Training replay'}, ${Math.round(percentage * 100)}%`);
+  }
+
+  function clearLoading() {
+    clearTimeout(loadingTimer);
+    loadingTimer = null;
+  }
+
+  function scheduleLoading() {
+    if (!active() || phase !== 'video' || loadingTimer !== null) return;
+    const version = generation;
+    loadingTimer = setTimeout(() => {
+      loadingTimer = null;
+      if (version !== generation || !active() || phase !== 'video') return;
+      if (current().video.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) return;
+      current().overlay.hidden = false;
+      current().message.textContent = 'Loading video…';
+      current().elapsed.textContent = '';
+    }, 250);
+  }
+
+  function stopVideo() {
+    generation += 1;
+    clearLoading();
+    current().video.pause();
+    playing = false;
+  }
+
+  function flushSeek(card) {
+    if (card.pendingSeek === null || card.video.seeking) return;
+    const ranges = card.video.seekable;
+    const time = card.pendingSeek;
+    for (let i = 0; i < ranges.length; i += 1) {
+      if (time < ranges.start(i) || time > ranges.end(i)) continue;
+      card.pendingSeek = null;
+      if (Math.abs(card.video.currentTime - time) > 0.001) card.video.currentTime = time;
+      return;
+    }
+  }
+
+  function seekVideo(card, time) {
+    card.pendingSeek = time;
+    flushSeek(card);
+  }
+
+  function seekTo(position) {
+    stopVideo();
+    const card = current();
+    const value = Math.max(0, Math.min(card.cardProgress.max, position));
+    elapsed = Math.min(value * 1000, duration());
+    phase = value < motions[index].activeSeconds ? 'training' : 'video';
+    seekVideo(card, Math.max(0, value - motions[index].activeSeconds));
+    card.progress.value = elapsed / 1000;
+    card.overlay.hidden = phase === 'video';
+    card.message.textContent = paused || scrubbing ? 'Training paused' : 'Training…';
+    card.elapsed.textContent = `${(elapsed / 1000).toFixed(2)} / ${motions[index].activeSeconds.toFixed(2)} s`;
+    previousTick = performance.now();
+    status.textContent = phase === 'training' ? 'Training time replay' : 'Playback';
+    updateCardProgress();
+    updateControls();
+    playVideo();
+  }
+
+  function finishScrubbing() {
+    if (!scrubbing) return;
+    scrubbing = false;
+    previousTick = performance.now();
+    if (phase === 'training') current().message.textContent = paused ? 'Training paused' : 'Training…';
+    playVideo();
   }
 
   function showError() {
+    stopVideo();
     phase = 'error';
     paused = true;
     playing = false;
@@ -139,18 +255,26 @@
     if (!active() || phase !== 'video' || playing) return;
     const version = generation;
     const card = current();
+    card.overlay.hidden = true;
+    if (card.pendingSeek !== null || card.video.seeking) {
+      scheduleLoading();
+      return;
+    }
     playing = true;
-    card.message.textContent = 'Loading video…';
+    scheduleLoading();
     card.video.play().then(() => {
       if (version !== generation) return;
+      clearLoading();
       if (!active()) { card.video.pause(); playing = false; return; }
       card.overlay.hidden = true;
       status.textContent = 'Playback';
     }).catch((error) => {
       if (version !== generation) return;
+      clearLoading();
       playing = false;
       if (error.name === 'AbortError' && !active()) return;
       paused = true;
+      card.overlay.hidden = false;
       card.message.textContent = 'Ready to play';
       card.elapsed.textContent = 'Press Resume to watch.';
       status.textContent = 'Playback paused';
@@ -161,9 +285,9 @@
   function selectMotion(next, requestedDirection = 0) {
     const oldIndex = index;
     if (phase === 'error') paused = false;
-    generation += 1;
+    stopVideo();
+    scrubbing = false;
     settleTransition();
-    current().video.pause();
     index = wrap(next);
     updateHeadline(index, oldIndex);
     playing = false;
@@ -171,8 +295,8 @@
     phase = 'training';
     const card = current();
     card.video.pause();
-    card.video.currentTime = 0;
-    if (card.video.readyState === 0 || card.video.error) card.video.load();
+    seekVideo(card, 0);
+    if (card.video.error) card.video.load();
     card.progress.value = 0;
     card.overlay.hidden = false;
     card.message.textContent = paused ? 'Training paused' : 'Training…';
@@ -199,8 +323,7 @@
     paused = value;
     previousTick = performance.now();
     if (paused) {
-      current().video.pause();
-      playing = false;
+      stopVideo();
       if (phase === 'training') current().message.textContent = 'Training paused';
       status.textContent = phase === 'training' ? 'Training time replay paused' : 'Playback paused';
     } else if (phase === 'training') {
@@ -233,6 +356,7 @@
   pause.addEventListener('click', () => setPaused(!paused));
   choices.forEach((button, i) => button.addEventListener('click', () => selectMotion(i)));
   root.addEventListener('keydown', (event) => {
+    if (event.target.matches('input')) return;
     if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
       event.preventDefault();
       const direction = event.key === 'ArrowRight' ? 1 : -1;
@@ -241,7 +365,7 @@
   });
   function syncVisibility() {
     previousTick = performance.now();
-    if (!active()) { current().video.pause(); playing = false; }
+    if (!active()) stopVideo();
     else playVideo();
   }
   document.addEventListener('visibilitychange', syncVisibility);
@@ -250,6 +374,7 @@
   }
   let touch = null;
   viewport.addEventListener('touchstart', (event) => {
+    if (event.target.closest('[data-seek]')) { touch = null; return; }
     const point = event.changedTouches[0];
     touch = {x: point.clientX, y: point.clientY};
   }, {passive: true});
@@ -261,12 +386,8 @@
     if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) selectMotion(index + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1);
     touch = null;
   }, {passive: true});
-  const syncHeadlineWidths = () => headlineFields.forEach(field => {
-    field.element.style.width = `${field.items[index].getBoundingClientRect().width}px`;
-  });
-  window.addEventListener('resize', syncHeadlineWidths);
-  document.fonts.ready.then(syncHeadlineWidths);
   root.dataset.enhanced = '';
   selectMotion(0);
+  cards.forEach(card => card.video.load());
   requestAnimationFrame(tick);
 })();

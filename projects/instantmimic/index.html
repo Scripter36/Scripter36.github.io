@@ -53,8 +53,8 @@
   <link rel="stylesheet" href="/assets/project-page/css/fontawesome.all.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
   <link rel="stylesheet" href="/assets/project-page/css/nerfies.css">
-  <link rel="stylesheet" href="./assets/demo.css?v=6c5429210c">
-  <script defer src="./assets/demo.js?v=9ec20545c2"></script>
+  <link rel="stylesheet" href="./assets/demo.css?v=7ba1aa7148">
+  <script defer src="./assets/demo.js?v=37778aa38d"></script>
   <link rel="icon" href="/assets/project-page/images/favicon.svg">
 
   <script defer src="/assets/project-page/js/fontawesome.all.min.js"></script>
@@ -191,7 +191,7 @@
     <div class="hero-body">
       <div id="motion-demo" class="motion-demo" tabindex="0" aria-label="Motion learning demonstration">
         <h2 class="motion-demo__intro" data-headline aria-label="InstantMimic learns to walk in 1.36 seconds.">
-          <span aria-hidden="true">InstantMimic learns to<br><span class="motion-demo__word" data-headline-motion><span>walk</span></span> in <span class="motion-demo__word motion-demo__word--time" data-headline-time><span>1.36</span></span> s.</span>
+          <span aria-hidden="true">InstantMimic learns to<br><span class="motion-demo__word" data-headline-motion><span data-current>walk</span></span> in <span class="motion-demo__word motion-demo__word--time" data-headline-time><span data-current>1.36</span></span> s.</span>
         </h2>
         <div class="motion-demo__viewport" data-viewport>
           <div class="motion-demo__rail" data-rail>
@@ -207,7 +207,8 @@
                   <span class="motion-demo__elapsed" data-elapsed aria-hidden="true">0.00 / 1.36 s</span>
                 </div>
                 <div class="motion-demo__card-progress motion-demo__enhanced">
-                  <progress data-card-progress value="0" max="6.36376232" aria-label="Walk card progress"></progress>
+                  <progress data-card-progress value="0" max="6.36376232" aria-hidden="true"></progress>
+                  <input data-seek type="range" min="0" max="6.36376232" step="any" value="0" aria-label="Walk playback position">
                 </div>
               </div>
             </article>
