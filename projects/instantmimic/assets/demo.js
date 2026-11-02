@@ -10,12 +10,52 @@
   const pause = root.querySelector('[data-pause]');
   const choices = [...root.querySelectorAll('[data-motion]')];
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const headline = root.querySelector('[data-headline]');
+  const headlineFields = [
+    {element: root.querySelector('[data-headline-motion]'), values: motions.map(motion => motion.action)},
+    {element: root.querySelector('[data-headline-time]'), values: motions.map(motion => motion.activeSeconds.toFixed(2))}
+  ].map(field => {
+    const items = field.values.map((value, i) => {
+      const item = document.createElement('span');
+      item.textContent = value;
+      item.style.visibility = i === 0 ? 'visible' : 'hidden';
+      return item;
+    });
+    field.element.replaceChildren(...items);
+    field.element.style.width = `${items[0].getBoundingClientRect().width}px`;
+    return {...field, items, animations: []};
+  });
+
+  function updateHeadline(next, previous) {
+    headline.setAttribute('aria-label', `InstantMimic learns to ${motions[next].action} in ${motions[next].activeSeconds.toFixed(2)} seconds.`);
+    headlineFields.forEach(field => {
+      field.animations.forEach(animation => animation.cancel());
+      field.animations = [];
+      field.items.forEach(item => { item.style.visibility = 'hidden'; });
+      const incoming = field.items[next];
+      field.element.style.width = `${incoming.getBoundingClientRect().width}px`;
+      incoming.style.visibility = 'visible';
+      if (next === previous || reducedMotion) return;
+      const outgoing = field.items[previous];
+      outgoing.style.visibility = 'visible';
+      const timing = {duration: 360, easing: 'cubic-bezier(.22,.61,.36,1)', fill: 'both'};
+      field.animations = [
+        outgoing.animate([{transform: 'translateY(0)', opacity: 1}, {transform: 'translateY(-100%)', opacity: 0}], timing),
+        incoming.animate([{transform: 'translateY(100%)', opacity: 0}, {transform: 'translateY(0)', opacity: 1}], timing)
+      ];
+      const incomingAnimation = field.animations[1];
+      incomingAnimation.addEventListener('finish', () => {
+        if (field.animations[1] !== incomingAnimation) return;
+        outgoing.style.visibility = 'hidden';
+        field.animations.forEach(animation => animation.cancel());
+        field.animations = [];
+      }, {once: true});
+    });
+  }
   const cards = motions.map((motion, i) => {
     const element = i === 0 ? template : template.cloneNode(true);
     element.dataset.motionId = motion.id;
     element.setAttribute('aria-label', motion.name);
-    element.querySelector('[data-title]').textContent = motion.name;
-    element.querySelector('[data-time]').textContent = `${motion.activeSeconds.toFixed(2)} s`;
     const video = element.querySelector('video');
     video.controls = false;
     video.preload = 'metadata';
@@ -125,6 +165,7 @@
     settleTransition();
     current().video.pause();
     index = wrap(next);
+    updateHeadline(index, oldIndex);
     playing = false;
     elapsed = 0;
     phase = 'training';
@@ -220,6 +261,11 @@
     if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) selectMotion(index + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1);
     touch = null;
   }, {passive: true});
+  const syncHeadlineWidths = () => headlineFields.forEach(field => {
+    field.element.style.width = `${field.items[index].getBoundingClientRect().width}px`;
+  });
+  window.addEventListener('resize', syncHeadlineWidths);
+  document.fonts.ready.then(syncHeadlineWidths);
   root.dataset.enhanced = '';
   selectMotion(0);
   requestAnimationFrame(tick);
