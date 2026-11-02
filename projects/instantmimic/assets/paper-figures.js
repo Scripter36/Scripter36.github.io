@@ -130,7 +130,7 @@
       item.label.setAttribute('x', legendX + 15);
       legendX += legendWidths[index] + 16;
     });
-    axes(svg, box, [0, 20, 40, 60, 80, 100], [0, 50, 100], 'Relative rollout time (%)', 'GPU util. (%)', x, y, {hideYAxis: compact});
+    axes(svg, box, [0, 20, 40, 60, 80, 100], [0, 50, 100], 'Relative rollout-step time (%)', 'GPU util. (%)', x, y, {hideYAxis: compact});
     const clipId = `profile-duration-${++nextId}`;
     const clip = node(node(node(svg, 'defs'), 'clipPath', {id: clipId}), 'rect', {x: box.left, y: box.top, height: box.bottom - box.top});
     const bars = node(svg, 'g', {'clip-path': `url(#${clipId})`});
