@@ -60,19 +60,40 @@
   function text(parent, x, y, value, attrs = {}) {
     return node(parent, 'text', {x, y, ...attrs}, value);
   }
-  function axes(svg, box, xs, ys, xLabel, yLabel, x, y) {
+  function yAxisMargin(svg, ticks, label) {
+    const title = text(svg, 0, 0, label, {class: 'plot-label', visibility: 'hidden'});
+    const titleHeight = title.getBBox().height;
+    title.remove();
+    const widths = ticks.map(value => {
+      const tick = text(svg, 0, 0, value, {visibility: 'hidden'});
+      const width = tick.getBBox().width;
+      tick.remove();
+      return width;
+    });
+    // Outer padding, rotated title, title/tick gap, widest tick and tick/plot gap.
+    return Math.ceil(8 + titleHeight + 10 + Math.max(...widths) + 10);
+  }
+  function axes(svg, box, xs, ys, xLabel, yLabel, x, y, {hideYAxis = false} = {}) {
+    const ticks = [];
     for (const value of ys) {
       node(svg, 'line', {x1: box.left, x2: box.right, y1: y(value), y2: y(value), class: 'plot-grid'});
-      text(svg, box.left - 10, y(value) + 4, value, {'text-anchor': 'end'});
+      if (!hideYAxis) ticks.push(text(svg, box.left - 10, y(value) + 4, value, {'text-anchor': 'end', class: 'plot-y-tick'}));
     }
     for (const value of xs) {
       node(svg, 'line', {x1: x(value), x2: x(value), y1: box.bottom, y2: box.bottom + 5, class: 'plot-axis'});
       text(svg, x(value), box.bottom + 22, value, {'text-anchor': 'middle'});
     }
-    node(svg, 'path', {d: `M ${box.left} ${box.top} V ${box.bottom} H ${box.right}`, class: 'plot-axis', fill: 'none'});
+    const path = hideYAxis ? `M ${box.left} ${box.bottom} H ${box.right}` : `M ${box.left} ${box.top} V ${box.bottom} H ${box.right}`;
+    node(svg, 'path', {d: path, class: 'plot-axis', fill: 'none'});
     text(svg, (box.left + box.right) / 2, box.bottom + 48, xLabel, {'text-anchor': 'middle', class: 'plot-label'});
-    const cy = (box.top + box.bottom) / 2;
-    text(svg, 17, cy, yLabel, {transform: `rotate(-90 17 ${cy})`, 'text-anchor': 'middle', class: 'plot-label'});
+    if (!hideYAxis && yLabel) {
+      const cy = (box.top + box.bottom) / 2;
+      const title = text(svg, 0, cy, yLabel, {'text-anchor': 'middle', 'dominant-baseline': 'central', class: 'plot-label plot-y-title'});
+      const bounds = title.getBBox();
+      const tickLeft = Math.min(...ticks.map(tick => tick.getBBox().x));
+      const titleX = tickLeft - 10 - (bounds.y + bounds.height - cy);
+      set(title, {x: titleX, transform: `rotate(-90 ${titleX} ${cy})`});
+    }
   }
   function prepare(svg, width, height) {
     svg.replaceChildren();
@@ -81,7 +102,9 @@
   }
   function profileGraph(svg, width) {
     prepare(svg, width, 360);
-    const box = {left: 53, right: width - 53, top: 176, bottom: 284};
+    const compact = width < 500;
+    const margin = compact ? 12 : yAxisMargin(svg, [0, 50, 100], 'GPU util. (%)');
+    const box = {left: margin, right: width - margin, top: 176, bottom: 284};
     const span = box.right - box.left;
     const x = ms => box.left + span * ms / 15;
     const y = value => box.bottom - (box.bottom - box.top) * value / 100;
@@ -93,7 +116,7 @@
       outline: node(svg, 'rect', {y: 46, height: 62, fill: 'none', stroke: '#424b50', 'stroke-width': 1, 'data-phase-outline': phase.name}),
     }));
     for (const phase of phases) phase.labelWidth = phase.label.getComputedTextLength() + 8;
-    text(svg, box.left, 145, 'GPU utilization', {class: 'plot-heading'});
+    text(svg, box.left, 145, compact ? 'GPU utilization (%)' : 'GPU utilization', {class: 'plot-heading'});
     const series = data.profile.series;
     const legend = series.map(item => ({
       rect: node(svg, 'rect', {y: 156, width: 10, height: 8, fill: item.color}),
@@ -107,7 +130,7 @@
       item.label.setAttribute('x', legendX + 15);
       legendX += legendWidths[index] + 16;
     });
-    axes(svg, box, [0, 3, 6, 9, 12, 15], [0, 50, 100], 'Time (ms)', 'GPU util. (%)', x, y);
+    axes(svg, box, [0, 3, 6, 9, 12, 15], [0, 50, 100], 'Time (ms)', 'GPU util. (%)', x, y, {hideYAxis: compact});
     const clipId = `profile-duration-${++nextId}`;
     const clip = node(node(node(svg, 'defs'), 'clipPath', {id: clipId}), 'rect', {x: box.left, y: box.top, height: box.bottom - box.top});
     const bars = node(svg, 'g', {'clip-path': `url(#${clipId})`});
@@ -143,7 +166,7 @@
   }
   function searchGraph(svg, width) {
     prepare(svg, width, 322);
-    const box = {left: 57, right: width - 20, top: 18, bottom: 258};
+    const box = {left: yAxisMargin(svg, [0, 5, 10, 15, 20], 'Time to 90% success (s)'), right: width - 20, top: 18, bottom: 258};
     const x = cycle => box.left + (box.right - box.left) * cycle / 80;
     const y = seconds => box.bottom - (box.bottom - box.top) * seconds / 20;
     axes(svg, box, width > 420 ? [0, 20, 40, 60, 80] : [0, 40, 80], [0, 5, 10, 15, 20], 'Optimization cycle', 'Time to 90% success (s)', x, y);
@@ -163,7 +186,7 @@
   }
   function learningGraph(svg, width) {
     prepare(svg, width, 322);
-    const box = {left: 53, right: width - 15, top: 18, bottom: 258};
+    const box = {left: yAxisMargin(svg, [0, 100, 200, 300], 'Episode length'), right: width - 15, top: 18, bottom: 258};
     const x = seconds => box.left + (box.right - box.left) * seconds / 25;
     const y = steps => box.bottom - (box.bottom - box.top) * steps / 315;
     axes(svg, box, [0, 10, 20], [0, 100, 200, 300], 'Active training time (s)', 'Episode length', x, y);
@@ -204,6 +227,8 @@
       this.root.dataset.enhanced = '';
       this.resize();
       document.addEventListener('visibilitychange', () => this.sync());
+      document.fonts?.ready.then(() => this.resize());
+      document.fonts?.addEventListener('loadingdone', () => this.resize());
       reducedMotion.addEventListener('change', event => {
         if (event.matches) this.reduceMotion();
       });

@@ -56,7 +56,7 @@
   <link rel="stylesheet" href="./assets/demo.css?v=7ba1aa7148">
   <script defer src="./assets/demo.js?v=37778aa38d"></script>
   <link rel="stylesheet" href="./assets/paper-figures.css?v=ad615b5010">
-  <script defer src="./assets/paper-figures.js?v=45ddd00ae6"></script>
+  <script defer src="./assets/paper-figures.js?v=4f86a6faf9"></script>
   <link rel="icon" href="/assets/project-page/images/favicon.svg">
 
   <script defer src="/assets/project-page/js/fontawesome.all.min.js"></script>
@@ -302,28 +302,15 @@
   </div>
 </section>
 
-<section class="section">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Abstract</h2>
-        <div class="content has-text-justified">
-          <p>
-            Physics-based character control is a long-standing challenge in computer graphics and robotics, requiring policies that satisfy complex dynamics while producing realistic motion. Recent Deep RL approaches, particularly imitation learning methods such as DeepMimic, have had broad impact beyond animation, influencing robotics by enabling agile and expressive behaviors. While these approaches achieve impressive results, they remain computationally inefficient to train in practice. Despite GPU-accelerated simulation, we find that end-to-end pipelines often underutilize hardware due to overheads outside the physics solver, caused by fragmented GPU kernels and CPU memory access in the critical path. We present InstantMimic, a system that addresses these inefficiencies by making the entire training loop GPU-native. Built on a GPU-native physics backend, our unified pipeline integrates simulation, environment computation, policy inference, and policy updates within a single execution flow. As a result, InstantMimic compresses training for diverse physics-based skills to a few seconds, and makes LLM-agent-driven hyperparameter search practical.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <section class="section" id="gpu-native-loop">
   <div class="container is-max-desktop">
     <div class="columns is-centered">
       <div class="column is-four-fifths">
         <h2 class="title is-3 has-text-centered">A GPU-native training loop</h2>
-        <p>In the reference implementation, most of a rollout step is spent outside physics.
-          Select an implementation to compare the rollout phases and GPU utilization.</p>
+        <p>In the reference loop, most of a rollout step goes to reward evaluation, resets,
+          and observation construction. InstantMimic fuses this work into Warp kernels and
+          uses CUDA Graph replay to reduce launch overhead. Simulation state and reset
+          decisions stay on the GPU, avoiding CPU round trips. PPO updates use PyTorch compilation.</p>
         <figure class="paper-figure" data-interactive-figure="profile">
           <div data-figure-fallback class="paper-figure__fallback">
             <img src="./assets/training-profile.jpg" alt="The optimized GPU profile fits into 3.033 ms, compared with the reference implementation’s 14.878 ms." width="1920" height="930" loading="lazy">
@@ -346,7 +333,7 @@
                   <p>GPU utilization stays high through the step.</p>
                 </div>
               </div>
-              <div class="paper-figure__plot"><svg data-plot="profile" role="img" aria-label="Rollout phases and GPU utilization, on a fixed 0 to 15 millisecond time scale" aria-describedby="training-profile-caption"></svg></div>
+              <div class="paper-figure__plot"><svg data-plot="profile" role="img" aria-label="Rollout phases and GPU utilization from 0 to 100 percent, on a fixed 0 to 15 millisecond time scale" aria-describedby="training-profile-caption"></svg></div>
               <div class="paper-figure__legend" aria-label="Training phases">
               <span><i style="--series-color:#B9A0CC" aria-hidden="true"></i>Policy</span>
               <span><i style="--series-color:#8EC1FF" aria-hidden="true"></i>Physics</span>
@@ -369,8 +356,11 @@
     <div class="columns is-centered">
       <div class="column is-four-fifths">
         <h2 class="title is-3 has-text-centered">LLM-guided hyperparameter search</h2>
-        <p>With the starting configuration, learning a backflip takes 18.77 s of active training.
-          Replay the LLM-guided search and compare the learning curves.</p>
+        <p>Short training runs let an LLM agent try many configurations. The agent plans the
+          search and proposes hyperparameter values. A Python executor trains and evaluates
+          the candidates across multiple seeds, then returns the results so the agent can
+          decide what to try next. In the backflip study, 80 cycles cut active training time
+          from 18.77 s to 2.17 s.</p>
         <figure class="paper-figure" data-interactive-figure="search">
           <div data-figure-fallback class="paper-figure__fallback paper-figure__fallback--search">
             <img src="./assets/search-progress.jpg" alt="Best training time decreases from 18.77 to 2.17 seconds over 80 optimization cycles." width="1920" height="930" loading="lazy">
