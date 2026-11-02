@@ -51,18 +51,6 @@
 }
 
 .motion-demo__viewport { overflow: hidden; margin-inline: -12px; padding-block: 18px; margin-block: -18px; touch-action: pan-y; }
-@property --motion-card-fade {
-  syntax: "<length>";
-  inherits: false;
-  initial-value: 0px;
-}
-.motion-demo[data-enhanced] .motion-demo__viewport {
-  --motion-card-fade: 0px;
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--motion-card-fade), #000 calc(100% - var(--motion-card-fade)), transparent);
-  mask-image: linear-gradient(to right, transparent, #000 var(--motion-card-fade), #000 calc(100% - var(--motion-card-fade)), transparent);
-  transition: --motion-card-fade 120ms cubic-bezier(.22,.61,.36,1);
-}
-.motion-demo[data-transitioning="true"] .motion-demo__viewport { --motion-card-fade: clamp(24px, 6vw, 48px); }
 .motion-demo__rail { display: flex; transform: translateX(-100%); }
 .motion-demo:not([data-enhanced]) .motion-demo__rail { display: block; transform: none; }
 .motion-demo__card { flex: 0 0 100%; min-width: 0; padding: 0 12px; box-sizing: border-box; }
