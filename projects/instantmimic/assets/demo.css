@@ -2,7 +2,7 @@
 .motion-demo { max-width: 680px; margin: 0 auto; color: #292d31; }
 .motion-demo button { font: inherit; cursor: pointer; }
 .motion-demo button:focus-visible, .motion-demo:focus-visible { outline: 3px solid #237e9d; outline-offset: 4px; }
-.motion-demo__stage { position: relative; overflow: hidden; aspect-ratio: 3 / 2; border-radius: 12px; background: #45494a; touch-action: pan-y; }
+.motion-demo__stage { position: relative; overflow: hidden; aspect-ratio: 3 / 2; border-radius: 12px; background: #45494a; box-shadow: 0 6px 18px -6px rgb(30 45 54 / 12%), 0 1px 4px rgb(30 45 54 / 4%); touch-action: pan-y; }
 .motion-demo video { display: block; width: 100%; height: 100%; object-fit: contain; }
 .motion-demo__overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; padding: 2rem; color: #fff; background: rgba(37, 42, 44, .84); }
 .motion-demo__overlay[hidden] { display: none; }
@@ -50,7 +50,7 @@
   .motion-demo *, .motion-demo *::before, .motion-demo *::after { scroll-behavior: auto !important; transition: none !important; }
 }
 
-.motion-demo__viewport { overflow: hidden; margin-inline: -12px; touch-action: pan-y; }
+.motion-demo__viewport { overflow: hidden; margin-inline: -12px; padding-block: 18px; margin-block: -18px; touch-action: pan-y; }
 .motion-demo__rail { display: flex; transform: translateX(-100%); }
 .motion-demo:not([data-enhanced]) .motion-demo__rail { display: block; transform: none; }
 .motion-demo__card { flex: 0 0 100%; min-width: 0; padding: 0 12px; box-sizing: border-box; }
