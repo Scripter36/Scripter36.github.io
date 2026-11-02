@@ -1,41 +1,50 @@
 {
-  "sourceRevision": "5e16b9b684f64af04623c233508ddca506afb001",
+  "sourceRevision": "7cf06a9d635db4329343b31691d66ed3c91f443b",
   "gpu": "NVIDIA GeForce RTX 5090",
-  "protocol": "First evaluated checkpoint completing 300 control steps in all 32 deterministic evaluation worlds. Evaluation interval: 5 training iterations. One selected run per motion; not a three-seed median.",
+  "protocol": "One selected run per motion, evaluated every five training iterations in 32 deterministic worlds for 300 control steps. Spinkick and backflip use the first all-world successful checkpoint; walk uses iteration 70 after first success at iteration 65. Not three-seed medians.",
   "timeDefinition": "Active training excludes initialization, compile setup, evaluation, checkpoint saving and recording.",
   "motions": [
     {
       "id": "walk",
       "name": "Walk",
-      "video": "assets/walk.mp4?v=4e29a72e1d",
-      "poster": "assets/walk.jpg?v=333a402010",
-      "activeSeconds": 1.3637623200000002,
+      "video": "assets/walk.mp4?v=ed5e6b759d",
+      "poster": "assets/walk.jpg?v=ab014b68c8",
+      "activeSeconds": 1.135897793,
       "seed": 42,
-      "iteration": 60,
-      "sha256": "4e29a72e1d00d4c3f0f524b92c124a4f63a35d6bd6860861500f7341451642a3",
-      "action": "walk"
+      "iteration": 70,
+      "sha256": "ed5e6b759d768b0ef28f657a3adaa98952e2ea332be2e85b41f4668ea1a7405f",
+      "action": "walk",
+      "firstSuccessIteration": 65,
+      "firstSuccessActiveSeconds": 1.055982817,
+      "selection": "Selected demonstration checkpoint after first success"
     },
     {
       "id": "spinkick",
       "name": "Spinkick",
-      "video": "assets/spinkick.mp4?v=2acbbce05b",
-      "poster": "assets/spinkick.jpg?v=0595ee0d06",
-      "activeSeconds": 1.710451361,
+      "video": "assets/spinkick.mp4?v=6f38cf416f",
+      "poster": "assets/spinkick.jpg?v=bdee79b68b",
+      "activeSeconds": 1.23830372,
       "seed": 43,
       "iteration": 75,
-      "sha256": "2acbbce05b84f0c1b131de079a809af303da6d43646b4cf7b85c372a87a306f3",
-      "action": "spinkick"
+      "sha256": "6f38cf416fa558c4890f33b3a61ce7567a4d7589216b21afaca920f260621d30",
+      "action": "spinkick",
+      "firstSuccessIteration": 75,
+      "firstSuccessActiveSeconds": 1.23830372,
+      "selection": "First all-world successful evaluation"
     },
     {
       "id": "backflip",
       "name": "Backflip",
-      "video": "assets/backflip.mp4?v=d22936fc83",
-      "poster": "assets/backflip.jpg?v=286024e68e",
-      "activeSeconds": 2.8165317450000003,
+      "video": "assets/backflip.mp4?v=5dbd606e42",
+      "poster": "assets/backflip.jpg?v=55577d1b79",
+      "activeSeconds": 1.9329602030000002,
       "seed": 43,
-      "iteration": 125,
-      "sha256": "d22936fc8374947dd33d835341c4d932130b29ac852368f46e2601de15a3b50f",
-      "action": "backflip"
+      "iteration": 120,
+      "sha256": "5dbd606e424dc9aa0a2b533815fb65a80246e88721c95284520eef07c8c7fb58",
+      "action": "backflip",
+      "firstSuccessIteration": 120,
+      "firstSuccessActiveSeconds": 1.9329602030000002,
+      "selection": "First all-world successful evaluation"
     }
   ],
   "rendering": {
@@ -44,6 +53,15 @@
     "fps": 60,
     "durationSeconds": 10,
     "camera": "Velocity-aware horizontal tracking with smoothed lookahead and a fixed target height for every motion.",
-    "horizontalVisibleSpanMultiplier": 1.1
+    "horizontalVisibleSpanMultiplier": 1.1,
+    "referenceGhost": {
+      "color": "translucent green",
+      "worldOffsetMeters": [
+        -1.2,
+        0,
+        0
+      ],
+      "purpose": "Reference motion shifted for visual comparison"
+    }
   }
 }

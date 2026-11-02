@@ -347,7 +347,8 @@
       });
       this.label.textContent = this.target ? 'InstantMimic' : 'Reference (Isaac Lab)';
       const throughput = this.target ? data.profile.optimizedKfps : data.profile.baselineKfps;
-      this.value.textContent = `${throughput} kFPS`;
+      const approximate = this.target && data.profile.optimizedKfpsApproximate;
+      this.value.textContent = `${approximate ? '≈' : ''}${throughput} kFPS`;
       this.root.dataset.state = this.playing ? 'transitioning' : this.target ? 'optimized' : 'reference';
       this.tabs.forEach((tab, index) => {
         tab.setAttribute('aria-selected', String(index === this.target));
@@ -355,7 +356,7 @@
       });
       this.panel.setAttribute('aria-labelledby', this.tabs[this.target].id);
       const finding = this.notes[this.target].textContent.trim().replace(/\s+/g, ' ');
-      this.announce(this.playing ? '' : `${this.label.textContent}. Training throughput is ${throughput} thousand frames per second. ${finding}`);
+      this.announce(this.playing ? '' : `${this.label.textContent}. Training throughput is ${approximate ? 'approximately ' : ''}${throughput} thousand frames per second. ${finding}`);
     }
   }
   class SearchComparison extends Figure {
