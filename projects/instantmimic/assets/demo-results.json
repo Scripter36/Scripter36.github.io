@@ -7,34 +7,34 @@
     {
       "id": "walk",
       "name": "Walk",
-      "video": "assets/walk.mp4?v=9311f765b8",
-      "poster": "assets/walk.jpg?v=bbd3a1dd8d",
+      "video": "assets/walk.mp4?v=4e29a72e1d",
+      "poster": "assets/walk.jpg?v=333a402010",
       "activeSeconds": 1.3637623200000002,
       "seed": 42,
       "iteration": 60,
-      "sha256": "9311f765b8b6977e5ba3939cc4e95f4dfc4ae1811d220649d7448ede6484eb1e",
+      "sha256": "4e29a72e1d00d4c3f0f524b92c124a4f63a35d6bd6860861500f7341451642a3",
       "action": "walk"
     },
     {
       "id": "spinkick",
       "name": "Spinkick",
-      "video": "assets/spinkick.mp4?v=3a843edf35",
+      "video": "assets/spinkick.mp4?v=2acbbce05b",
       "poster": "assets/spinkick.jpg?v=0595ee0d06",
       "activeSeconds": 1.710451361,
       "seed": 43,
       "iteration": 75,
-      "sha256": "3a843edf3567cf2236713f9327d9542ac8b6373216cda9330c8174f6560d8c5b",
+      "sha256": "2acbbce05b84f0c1b131de079a809af303da6d43646b4cf7b85c372a87a306f3",
       "action": "spinkick"
     },
     {
       "id": "backflip",
       "name": "Backflip",
-      "video": "assets/backflip.mp4?v=a33bc00c0c",
-      "poster": "assets/backflip.jpg?v=6fdcce33fb",
+      "video": "assets/backflip.mp4?v=d22936fc83",
+      "poster": "assets/backflip.jpg?v=286024e68e",
       "activeSeconds": 2.8165317450000003,
       "seed": 43,
       "iteration": 125,
-      "sha256": "a33bc00c0cc79a6a27c41d30378cd5808d06535691492baf27ed199b7311a62d",
+      "sha256": "d22936fc8374947dd33d835341c4d932130b29ac852368f46e2601de15a3b50f",
       "action": "backflip"
     }
   ],
@@ -43,7 +43,7 @@
     "height": 960,
     "fps": 60,
     "durationSeconds": 10,
-    "camera": "Horizontal tracking with a fixed target height for every motion.",
+    "camera": "Velocity-aware horizontal tracking with smoothed lookahead and a fixed target height for every motion.",
     "horizontalVisibleSpanMultiplier": 1.1
   }
 }
