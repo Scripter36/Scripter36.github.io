@@ -20,10 +20,11 @@
 .motion-demo__motions button[aria-pressed="true"] { color: #18465a; background: #e8f0f3; }
 .motion-demo__intro { margin: 0 0 2.25rem; text-align: center; font-size: clamp(1.625rem, 3vw, 2.125rem); font-weight: 600; line-height: 1.25; text-wrap: balance; }
 .motion-demo__word {
-  display: inline-grid; height: 1.25em; overflow: hidden; vertical-align: bottom; color: #477d8e;
+  display: inline-grid; height: 1.75em; padding-block: .25em; margin-block: -.25em; box-sizing: border-box;
+  overflow: hidden; vertical-align: bottom; color: #477d8e;
   transition: width 360ms cubic-bezier(.22,.61,.36,1);
-  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
-  mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 .25em, #000 calc(100% - .25em), transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 .25em, #000 calc(100% - .25em), transparent);
 }
 .motion-demo__word > span { grid-area: 1 / 1; width: max-content; line-height: 1.25; white-space: nowrap; }
 .motion-demo__word--time { font-variant-numeric: tabular-nums; }
