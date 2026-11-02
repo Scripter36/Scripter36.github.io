@@ -53,7 +53,7 @@
   <link rel="stylesheet" href="/assets/project-page/css/fontawesome.all.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
   <link rel="stylesheet" href="/assets/project-page/css/nerfies.css">
-  <link rel="stylesheet" href="./assets/demo.css?v=2347a162a7">
+  <link rel="stylesheet" href="./assets/demo.css?v=31265dd4c6">
   <script defer src="./assets/demo.js?v=9ec20545c2"></script>
   <link rel="icon" href="/assets/project-page/images/favicon.svg">
 
@@ -197,9 +197,9 @@
           <div class="motion-demo__rail" data-rail>
             <article class="motion-demo__card" data-card role="group" aria-roledescription="slide" aria-label="Walk">
               <div class="motion-demo__stage" data-stage>
-                <video controls muted playsinline preload="auto" poster="./assets/walk.jpg" aria-label="Learned motion playback">
-                  <source src="./assets/walk.mp4" type="video/mp4">
-                  <a href="./assets/walk.mp4">Watch the walk video</a>
+                <video controls muted playsinline preload="auto" poster="./assets/walk.jpg?v=67ef7406cb" aria-label="Learned motion playback">
+                  <source src="./assets/walk.mp4?v=9751f3df83" type="video/mp4">
+                  <a href="./assets/walk.mp4?v=9751f3df83">Watch the walk video</a>
                 </video>
                 <div class="motion-demo__overlay" data-overlay>
                   <strong data-message>Training…</strong>
@@ -230,9 +230,9 @@
           <button type="button" data-motion aria-pressed="false">Backflip</button>
         </nav>
         <p class="motion-demo__fallback">
-          <a href="./assets/walk.mp4">Walk</a>,
-          <a href="./assets/spinkick.mp4">spinkick</a>, and
-          <a href="./assets/backflip.mp4">backflip</a> videos.
+          <a href="./assets/walk.mp4?v=9751f3df83">Walk</a>,
+          <a href="./assets/spinkick.mp4?v=4b54f4a487">spinkick</a>, and
+          <a href="./assets/backflip.mp4?v=3c76ae9a22">backflip</a> videos.
         </p>
         <p class="motion-demo__notes">Measured on an RTX 5090. Times exclude setup and evaluation.</p>
         <span class="is-sr-only" data-status role="status" aria-live="polite"></span>
@@ -255,8 +255,8 @@
             These examples are individual runs, not three-seed medians.
             The carousel shows the first five seconds of each rollout at normal playback speed.
             The card progress bar covers the training time replay and those five seconds.</p>
-          <p>Full 10-second videos: <a href="./assets/walk.mp4">Walk</a>,
-            <a href="./assets/spinkick.mp4">spinkick</a>, and <a href="./assets/backflip.mp4">backflip</a>.</p>
+          <p>Full 10-second videos: <a href="./assets/walk.mp4?v=9751f3df83">Walk</a>,
+            <a href="./assets/spinkick.mp4?v=4b54f4a487">spinkick</a>, and <a href="./assets/backflip.mp4?v=3c76ae9a22">backflip</a>.</p>
           <p>See the <a href="https://github.com/Scripter36/InstantMimic/blob/HEAD/docs/reference/motion-demo.md">configs and measurement details</a>.</p>
         </details>
       </div>
@@ -264,35 +264,35 @@
   {
     "id": "walk",
     "name": "Walk",
-    "action": "walk",
-    "video": "assets/walk.mp4",
-    "poster": "assets/walk.jpg",
+    "video": "assets/walk.mp4?v=9751f3df83",
+    "poster": "assets/walk.jpg?v=67ef7406cb",
     "activeSeconds": 1.3637623200000002,
     "seed": 42,
     "iteration": 60,
-    "sha256": "00341f7076088686e003ad6293120c8f6c76e7dc0ca54697f04c49930d9b56ee"
+    "sha256": "9751f3df83159ae7225fd033eee2886b11f81a12c597cce139b8fae3fd401db0",
+    "action": "walk"
   },
   {
     "id": "spinkick",
     "name": "Spinkick",
-    "action": "spinkick",
-    "video": "assets/spinkick.mp4",
-    "poster": "assets/spinkick.jpg",
+    "video": "assets/spinkick.mp4?v=4b54f4a487",
+    "poster": "assets/spinkick.jpg?v=3312d7b00e",
     "activeSeconds": 1.710451361,
     "seed": 43,
     "iteration": 75,
-    "sha256": "c3b944bee6527d633059def5ca92f2196c5f405e8904477ac325d94432922757"
+    "sha256": "4b54f4a4877c033c1b89fc6759f895c5c0d29635a160ca3557da00f6fc8b701a",
+    "action": "spinkick"
   },
   {
     "id": "backflip",
     "name": "Backflip",
-    "action": "backflip",
-    "video": "assets/backflip.mp4",
-    "poster": "assets/backflip.jpg",
+    "video": "assets/backflip.mp4?v=3c76ae9a22",
+    "poster": "assets/backflip.jpg?v=d26aa70b59",
     "activeSeconds": 2.8165317450000003,
     "seed": 43,
     "iteration": 125,
-    "sha256": "aec0150502750f8724c3e70a282a9b5a64632cdc590383d63bb5714b0e875b5a"
+    "sha256": "3c76ae9a2260f81fd561825d586b06c889bbf741ca92d534a13c9fa296628979",
+    "action": "backflip"
   }
 ]</script>
     </div>
