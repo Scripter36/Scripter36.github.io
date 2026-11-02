@@ -53,15 +53,8 @@
 .paper-figure__notes > div { grid-area: 1 / 1; }
 .paper-figure__notes p { margin: 0; }
 
-.paper-figure__summary--profile { display: flex; justify-content: flex-start; gap: 1rem 3rem; }
-.paper-figure__summary--profile > span { display: inline-flex; align-items: baseline; gap: .5rem; }
-.paper-figure__summary--profile strong { display: inline-block; margin: 0; }
 .paper-figure__comparison { transition: opacity 240ms ease; }
 .paper-figure__comparison[aria-hidden="true"] { opacity: 0; pointer-events: none; }
-@media (max-width: 400px) {
-  .paper-figure__summary--profile { gap: 1rem 2rem; }
-  .paper-figure__summary--profile > span { flex-direction: column; gap: .25rem; }
-}
 @media (prefers-reduced-motion: reduce) {
   .paper-figure__comparison { transition: none; }
 }
