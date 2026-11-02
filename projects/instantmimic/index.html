@@ -419,7 +419,8 @@
         <h2 class="title is-3 has-text-centered">Scaling to large motion datasets</h2>
         <p>A VAE-based latent controller learns from 37.4 hours of AMASS motion.
           In the paper, it reaches a tracking success rate comparable to PHC within 30 minutes.
-          We then freeze the decoder and train a goal-position tracking policy in its latent action space.</p>
+          With the decoder frozen, the paper demonstrates downstream goal-position tracking
+          after one minute of training in its latent action space.</p>
         <figure class="amass-demo">
           <h3 class="title is-5">Sampling the latent controller</h3>
           <video controls muted playsinline loop preload="metadata" width="1440" height="960" poster="./assets/amass-latent.jpg?v=c94de5107e" aria-label="Sampling the latent controller">
