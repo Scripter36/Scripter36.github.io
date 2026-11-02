@@ -7,7 +7,45 @@
   const ns = 'http://www.w3.org/2000/svg';
   const clamp = n => Math.max(0, Math.min(1, n));
   const mix = (a, b, t) => a + (b - a) * t;
-  const ease = t => 1 - (1 - clamp(t)) ** 3;
+  const FIRST = {
+    x: [0, 0.05, 0.133333, 0.166666],
+    y: [0, 0, 0.06, 0.4],
+  };
+
+  const SECOND = {
+    x: [0.166666, 0.208333, 0.25, 1],
+    y: [0.4, 0.82, 1, 1],
+  };
+
+  const cubic = (points, t) => {
+    const oneMinusT = 1 - t;
+    return (
+      oneMinusT ** 3 * points[0] +
+      3 * oneMinusT ** 2 * t * points[1] +
+      3 * oneMinusT * t ** 2 * points[2] +
+      t ** 3 * points[3]
+);
+  };
+
+  const valueOnSegment = (segment, x) => {
+    let low = 0;
+    let high = 1;
+    for (let iteration = 0; iteration < 16; iteration++) {
+      const midpoint = (low + high) / 2;
+      if (cubic(segment.x, midpoint) < x) low = midpoint;
+      else high = midpoint;
+    }
+    return cubic(segment.y, (low + high) / 2);
+  };
+
+  // Material 3 emphasized easing:
+  // M 0,0 C 0.05,0 0.133333,0.06 0.166666,0.4
+  // C 0.208333,0.82 0.25,1 1,1
+  const material3Emphasized = (progress) => {
+    if (progress <= 0) return 0;
+    if (progress >= 1) return 1;
+    return valueOnSegment(progress <= 0.166666 ? FIRST : SECOND, progress);
+  };
   let nextId = 0;
   function node(parent, tag, attrs = {}, text) {
     const child = document.createElementNS(ns, tag);
@@ -138,42 +176,32 @@
     const optimized = node(svg, 'g', {'data-optimized-curve': '', 'clip-path': `url(#${clipId})`});
     draw(optimized, data.learning.optimized);
     const maxX = Math.max(...data.learning.optimized.line.map(p => p[0]));
-    return progress => {
-      const reveal = clamp((progress * 80 - 65) / 15);
+    return reveal => {
       set(optimized, {opacity: reveal > 0 ? 1 : 0, 'aria-hidden': reveal > 0 ? 'false' : 'true'});
       clip.setAttribute('width', (x(maxX) - box.left + 2) * reveal);
       return reveal;
     };
   }
-  class Comparison {
+  class Figure {
     constructor(root) {
       this.root = root;
-      this.kind = root.dataset.interactiveFigure;
       this.stage = root.querySelector('[data-figure-stage]');
-      this.action = root.querySelector('[data-figure-action]');
-      this.toggle = root.querySelector('[data-figure-toggle]');
       this.label = root.querySelector('[data-figure-label]');
       this.value = root.querySelector('[data-figure-value]');
       this.live = root.querySelector('[data-figure-live]');
-      this.phase = this.kind === 'profile' && !reducedMotion.matches ? 'intro' : 'ready';
-      this.elapsed = 0;
-      this.userPaused = false;
+      this.playing = false;
       this.visible = false;
       this.frame = 0;
       this.previous = null;
+    }
+    mount() {
       this.stage.hidden = false;
-      root.querySelector('[data-figure-fallback]').hidden = true;
-      root.dataset.enhanced = '';
+      this.root.querySelector('[data-figure-fallback]').hidden = true;
+      this.root.dataset.enhanced = '';
       this.resize();
-      this.action.addEventListener('click', () => this.optimize());
-      this.toggle.addEventListener('click', () => {this.userPaused = !this.userPaused; this.sync();});
-      root.querySelector('[data-figure-reset]').addEventListener('click', () => this.reset());
       document.addEventListener('visibilitychange', () => this.sync());
       reducedMotion.addEventListener('change', event => {
-        if (!event.matches) return;
-        if (this.phase === 'intro') {this.phase = 'ready'; this.elapsed = 0;}
-        else if (this.phase === 'optimizing') this.phase = 'done';
-        this.sync();
+        if (event.matches) this.reduceMotion();
       });
       this.observer = new IntersectionObserver(entries => {
         this.visible = entries[0].isIntersecting && entries[0].intersectionRatio >= .2;
@@ -181,83 +209,193 @@
       }, {threshold: [0, .2]});
       this.observer.observe(this.stage);
       this.resizeObserver = new ResizeObserver(() => this.resize());
-      for (const svg of root.querySelectorAll('[data-plot]')) this.resizeObserver.observe(svg.parentElement);
+      for (const svg of this.root.querySelectorAll('[data-plot]')) this.resizeObserver.observe(svg.parentElement);
       this.sync();
     }
-    isAnimating() {return this.phase === 'intro' || this.phase === 'optimizing';}
-    duration() {return this.phase === 'intro' ? 2400 : this.kind === 'profile' ? 1600 : 8000;}
-    progress() {return this.phase === 'done' ? 1 : this.phase === 'optimizing' ? clamp(this.elapsed / this.duration()) : 0;}
-    resize() {
-      const svg = this.root.querySelector('[data-plot]');
-      const width = Math.max(300, svg.parentElement.clientWidth);
-      if (this.kind === 'profile') this.drawProfile = profileGraph(svg, width);
-      else {
-        this.drawSearch = searchGraph(svg, width);
-        const learning = this.root.querySelector('[data-plot="learning"]');
-        this.drawLearning = learningGraph(learning, Math.max(280, learning.parentElement.clientWidth));
-      }
-      this.render();
-    }
-    render() {
-      const progress = this.progress();
-      const done = this.phase === 'done';
-      if (this.kind === 'profile') {
-        const highlight = this.phase === 'intro' ? clamp((this.elapsed - 1000) / 600) : this.phase === 'ready' ? 1 : 1 - ease(clamp(progress * 4));
-        const p = ease(progress);
-        this.drawProfile(p, highlight);
-        this.label.textContent = done ? 'InstantMimic' : this.phase === 'optimizing' ? 'Optimizing the training loop' : 'Reference implementation';
-        this.value.textContent = `${mix(data.profile.baselineMs, data.profile.optimizedMs, p).toFixed(3)} ms`;
-      } else {
-        const {cycle, best} = this.drawSearch(progress);
-        const reveal = this.drawLearning(progress);
-        this.root.querySelector('[data-cycle]').textContent = cycle;
-        this.root.querySelector('[data-optimized-legend]').style.opacity = reveal > 0 ? '1' : '0';
-        this.root.querySelector('[data-optimized-legend]').setAttribute('aria-hidden', reveal > 0 ? 'false' : 'true');
-        this.label.textContent = done ? 'Optimized backflip training' : this.phase === 'optimizing' ? 'Best backflip training time so far' : 'Baseline backflip training';
-        this.value.textContent = `${best.toFixed(2)} s`;
-      }
-      this.root.dataset.state = this.phase;
-      this.action.hidden = this.phase !== 'ready';
-      this.toggle.hidden = !this.isAnimating();
-      const playing = this.isAnimating() && !this.userPaused;
-      this.toggle.setAttribute('aria-label', playing ? 'Pause animation' : 'Play animation');
-      this.toggle.title = playing ? 'Pause animation' : 'Play animation';
-      this.toggle.querySelector('[data-play-icon]').hidden = playing;
-      this.toggle.querySelector('[data-pause-icon]').hidden = !playing;
-      this.live.textContent = done ? this.kind === 'profile' ? 'Optimization complete. A rollout step takes 3.033 milliseconds.' : 'Search complete. The optimized configuration takes 2.17 seconds to learn a backflip.' : '';
+    announce(message) {
+      if (this.live.textContent !== message) this.live.textContent = message;
     }
     sync() {
-      if (!this.visible || document.hidden || this.userPaused || !this.isAnimating()) {
-        cancelAnimationFrame(this.frame); this.frame = 0; this.previous = null;
+      if (!this.visible || document.hidden || !this.playing) {
+        cancelAnimationFrame(this.frame);
+        this.frame = 0;
+        this.previous = null;
       } else if (!this.frame) this.frame = requestAnimationFrame(time => this.tick(time));
       this.render();
     }
     tick(time) {
       this.frame = 0;
-      if (!this.visible || document.hidden || this.userPaused || !this.isAnimating()) return;
-      if (this.previous !== null) this.elapsed += time - this.previous;
+      if (!this.visible || document.hidden || !this.playing) return;
+      const delta = this.previous === null ? 0 : time - this.previous;
       this.previous = time;
-      if (this.elapsed >= this.duration()) {
-        this.phase = this.phase === 'intro' ? 'ready' : 'done';
-        this.elapsed = 0;
+      this.advance(delta);
+      this.sync();
+    }
+  }
+  class ProfileComparison extends Figure {
+    constructor(root) {
+      super(root);
+      this.position = 0;
+      this.target = 0;
+      this.tabs = [...root.querySelectorAll('[data-profile-tab]')];
+      this.panel = root.querySelector('[role="tabpanel"]');
+      this.tabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => this.select(index));
+        tab.addEventListener('keydown', event => {
+          const next = {ArrowLeft: 1 - index, ArrowRight: 1 - index, Home: 0, End: 1}[event.key];
+          if (next === undefined) return;
+          event.preventDefault();
+          this.tabs[next].focus();
+          this.select(next);
+        });
+      });
+      this.mount();
+    }
+    resize() {
+      const svg = this.root.querySelector('[data-plot]');
+      this.draw = profileGraph(svg, Math.max(300, svg.parentElement.clientWidth));
+      this.render();
+    }
+    select(target) {
+      if (target === this.target) return;
+      this.from = this.position;
+      this.target = target;
+      this.elapsed = 0;
+      this.duration = 1000 * Math.abs(target - this.from);
+      this.previous = null;
+      this.playing = !reducedMotion.matches && this.duration >= 1;
+      if (!this.playing) this.position = target;
+      this.sync();
+    }
+    advance(delta) {
+      this.elapsed += delta;
+      const progress = clamp(this.elapsed / this.duration);
+      this.position = mix(this.from, this.target, material3Emphasized(progress));
+      if (progress === 1) this.playing = false;
+    }
+    reduceMotion() {
+      this.position = this.target;
+      this.playing = false;
+      this.sync();
+    }
+    render() {
+      this.draw(this.position, 1 - this.position);
+      this.label.textContent = this.target ? 'InstantMimic' : 'Reference implementation';
+      this.value.textContent = `${mix(data.profile.baselineMs, data.profile.optimizedMs, this.position).toFixed(3)} ms`;
+      this.root.dataset.state = this.playing ? 'transitioning' : this.target ? 'optimized' : 'reference';
+      this.tabs.forEach((tab, index) => {
+        tab.setAttribute('aria-selected', String(index === this.target));
+        tab.tabIndex = index === this.target ? 0 : -1;
+      });
+      this.panel.setAttribute('aria-labelledby', this.tabs[this.target].id);
+      this.announce(this.playing ? '' : `${this.label.textContent}. A rollout step takes ${this.value.textContent}.`);
+    }
+  }
+  class SearchComparison extends Figure {
+    constructor(root) {
+      super(root);
+      this.position = 0;
+      this.reveal = 0;
+      this.revealElapsed = 0;
+      this.dragging = false;
+      this.resumeAfterDrag = false;
+      this.slider = root.querySelector('[data-cycle-slider]');
+      this.cycle = root.querySelector('[data-cycle]');
+      this.toggle = root.querySelector('[data-search-toggle]');
+      this.legend = root.querySelector('[data-optimized-legend]');
+      this.toggle.addEventListener('click', () => this.togglePlayback());
+      root.querySelector('[data-search-reset]').addEventListener('click', () => this.seek(0));
+      this.slider.addEventListener('pointerdown', event => {
+        if (event.button !== 0) return;
+        this.slider.setPointerCapture(event.pointerId);
+        this.dragging = true;
+        this.resumeAfterDrag = this.playing;
+        this.playing = false;
+        this.sync();
+      });
+      const endDrag = () => {
+        if (!this.dragging) return;
+        this.dragging = false;
+        this.playing = this.resumeAfterDrag && this.position < 1;
+        this.resumeAfterDrag = false;
+        this.previous = null;
+        this.sync();
+      };
+      this.slider.addEventListener('input', () => this.seek(Number(this.slider.value) / 80));
+      this.slider.addEventListener('pointerup', endDrag);
+      this.slider.addEventListener('pointercancel', endDrag);
+      this.slider.addEventListener('lostpointercapture', endDrag);
+      this.mount();
+    }
+    resize() {
+      const svg = this.root.querySelector('[data-plot="search"]');
+      this.drawSearch = searchGraph(svg, Math.max(300, svg.parentElement.clientWidth));
+      const learning = this.root.querySelector('[data-plot="learning"]');
+      this.drawLearning = learningGraph(learning, Math.max(280, learning.parentElement.clientWidth));
+      this.render();
+    }
+    seek(position) {
+      // Direct manipulation is immediate; no easing between selected cycles.
+      this.position = clamp(position);
+      this.reveal = this.position * 80 >= 65 ? 1 : 0;
+      this.revealElapsed = this.reveal ? 1000 : 0;
+      this.playing = false;
+      this.previous = null;
+      this.sync();
+    }
+    togglePlayback() {
+      if (this.position === 1) {
+        this.position = 0;
+        this.reveal = 0;
+        this.revealElapsed = 0;
       }
+      this.playing = !this.playing;
+      this.previous = null;
       this.sync();
     }
-    optimize() {
-      if (this.phase !== 'ready') return;
-      this.phase = reducedMotion.matches ? 'done' : 'optimizing';
-      this.elapsed = 0; this.previous = null; this.userPaused = false;
-      this.sync();
-      this.root.querySelector('[data-figure-reset]').focus({preventScroll: true});
+    advance(delta) {
+      const oldCycle = this.position * 80;
+      // Like the source film, optimization cycles advance linearly in time.
+      this.position = clamp(this.position + delta / 8000);
+      const cycle = this.position * 80;
+      if (cycle >= 65 && this.reveal < 1) {
+        // Only time after the winning configuration is found reveals its curve.
+        this.revealElapsed += Math.min(delta, (cycle - Math.max(oldCycle, 65)) * 100);
+        this.reveal = reducedMotion.matches ? 1 : material3Emphasized(clamp(this.revealElapsed / 1000));
+      }
+      if (this.position === 1) {
+        this.playing = false;
+        this.reveal = 1;
+      }
     }
-    reset() {
-      cancelAnimationFrame(this.frame); this.frame = 0;
-      // Reset to the diagnosis/baseline so the next comparison again needs a click.
-      this.phase = 'ready'; this.elapsed = 0; this.previous = null; this.userPaused = false;
+    reduceMotion() {
+      this.playing = false;
+      this.reveal = this.position * 80 >= 65 ? 1 : 0;
       this.sync();
-      this.action.focus({preventScroll: true});
+    }
+    render() {
+      const {cycle, best} = this.drawSearch(this.position);
+      this.drawLearning(this.reveal);
+      this.cycle.textContent = cycle;
+      this.slider.value = cycle;
+      this.slider.setAttribute('aria-valuetext', `Cycle ${cycle} of 80, best active training time ${best.toFixed(2)} seconds`);
+      this.slider.style.setProperty('--position', `${this.position * 100}%`);
+      this.legend.style.opacity = this.reveal > 0 ? '1' : '0';
+      this.legend.setAttribute('aria-hidden', String(this.reveal === 0));
+      this.label.textContent = this.position === 0 ? 'Baseline backflip training' : this.position === 1 ? 'Optimized backflip training' : 'Best backflip training time so far';
+      this.value.textContent = `${best.toFixed(2)} s`;
+      this.root.dataset.state = this.playing ? 'playing' : this.position === 1 ? 'done' : 'paused';
+      const label = this.playing ? 'Pause search' : this.position === 1 ? 'Replay search' : 'Play search';
+      this.toggle.setAttribute('aria-label', label);
+      this.toggle.title = label;
+      this.toggle.querySelector('[data-play-icon]').hidden = this.playing;
+      this.toggle.querySelector('[data-pause-icon]').hidden = !this.playing;
+      this.announce(this.position === 1 ? 'Search complete. The optimized configuration takes 2.17 seconds to learn a backflip.' : '');
     }
   }
   if (!('IntersectionObserver' in window) || !('ResizeObserver' in window)) return;
-  for (const root of document.querySelectorAll('[data-interactive-figure]')) new Comparison(root);
+  for (const root of document.querySelectorAll('[data-interactive-figure]')) {
+    if (root.dataset.interactiveFigure === 'profile') new ProfileComparison(root);
+    else new SearchComparison(root);
+  }
 })();

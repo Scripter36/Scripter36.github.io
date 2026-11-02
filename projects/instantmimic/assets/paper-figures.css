@@ -3,8 +3,7 @@
 .paper-figure__stage { min-width: 0; }
 .paper-figure__summary { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: .35rem 1rem; margin-bottom: 1rem; color: #4c565c; }
 .paper-figure__summary strong { display: inline-block; margin-left: .5rem; color: #30383d; font-size: 1.5rem; font-weight: 600; font-variant-numeric: tabular-nums; }
-.paper-figure[data-state="done"] .paper-figure__summary strong { color: #2f5d7c; }
-.paper-figure__cycle { font-size: .9rem; font-variant-numeric: tabular-nums; }
+.paper-figure[data-state="optimized"] .paper-figure__summary strong, .paper-figure[data-state="done"] .paper-figure__summary strong { color: #2f5d7c; }
 .paper-figure__plots { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 1.75rem; }
 .paper-figure__plot { min-width: 0; }
 .paper-figure__plot svg { display: block; width: 100%; height: auto; overflow: visible; color: #30383d; font-family: inherit; font-size: 12px; }
@@ -21,9 +20,6 @@
 .paper-figure__legend { display: flex; flex-wrap: wrap; gap: .35rem 1rem; margin: .25rem 0 .75rem; color: #626b70; font-size: .78rem; }
 .paper-figure__legend span { display: inline-flex; align-items: center; gap: .35rem; }
 .paper-figure__legend i { display: inline-block; width: 12px; height: 3px; background: var(--series-color); }
-.paper-figure__actions { display: flex; min-height: 44px; justify-content: center; align-items: center; gap: 1rem; margin: 1rem 0; }
-.paper-figure__action { border: 1px solid #477d8e; border-radius: 7px; padding: .55rem 1.2rem; background: #477d8e; color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
-.paper-figure__action:hover { background: #386b7b; }
 .paper-figure__controls { display: flex; justify-content: flex-end; gap: .25rem; }
 .paper-figure__controls button { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 0; border-radius: 6px; background: transparent; color: #414b50; cursor: pointer; }
 .paper-figure__controls button:hover { background: #f0f3f4; }
@@ -37,5 +33,19 @@
   .paper-figure__plots, .paper-figure__fallback--search { grid-template-columns: 1fr; gap: 1.5rem; }
   .paper-figure__summary { display: block; }
   .paper-figure__summary strong { display: block; margin: .25rem 0 0; }
-  .paper-figure__cycle { display: block; margin-top: .5rem; }
-}
+  }
+
+.paper-figure__tabs { display: flex; width: fit-content; gap: .25rem; margin: 0 auto 1.5rem; padding: .25rem; border-radius: 8px; background: #f0f3f4; }
+.paper-figure__tabs button { min-height: 40px; padding: .45rem 1rem; border: 0; border-radius: 6px; color: #626b70; background: transparent; font: inherit; cursor: pointer; }
+.paper-figure__tabs button[aria-selected="true"] { color: #254f5c; background: #fff; box-shadow: 0 1px 3px rgb(35 50 60 / 12%); }
+.paper-figure [role="tabpanel"]:focus-visible { outline: 3px solid #237e9d; outline-offset: 4px; }
+.paper-figure__timeline { display: flex; align-items: center; gap: 1rem; margin: 1.25rem 0 1.75rem; }
+.paper-figure__cycle-control { flex: 1; min-width: 0; }
+.paper-figure__cycle-control label { display: block; margin-bottom: .15rem; color: #626b70; font-size: .8rem; font-variant-numeric: tabular-nums; }
+.paper-figure__cycle-control input { display: block; appearance: none; width: 100%; height: 24px; margin: 0; background: transparent; cursor: pointer; touch-action: pan-y; --position: 0%; }
+.paper-figure__cycle-control input::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: linear-gradient(to right, #477d8e var(--position), #d8dfe2 var(--position)); }
+.paper-figure__cycle-control input::-moz-range-track { height: 4px; border-radius: 2px; background: #d8dfe2; }
+.paper-figure__cycle-control input::-moz-range-progress { height: 4px; background: #477d8e; }
+.paper-figure__cycle-control input::-webkit-slider-thumb { appearance: none; width: 14px; height: 14px; margin-top: -5px; border: 2px solid #fff; border-radius: 50%; background: #477d8e; box-shadow: 0 0 0 1px #477d8e; }
+.paper-figure__cycle-control input::-moz-range-thumb { width: 10px; height: 10px; border: 2px solid #fff; border-radius: 50%; background: #477d8e; box-shadow: 0 0 0 1px #477d8e; }
+.paper-figure__cycle-control input:focus-visible { outline: 3px solid #237e9d; outline-offset: 3px; border-radius: 4px; }

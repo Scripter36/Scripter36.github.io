@@ -55,8 +55,8 @@
   <link rel="stylesheet" href="/assets/project-page/css/nerfies.css">
   <link rel="stylesheet" href="./assets/demo.css?v=7ba1aa7148">
   <script defer src="./assets/demo.js?v=37778aa38d"></script>
-  <link rel="stylesheet" href="./assets/paper-figures.css?v=c0da546a07">
-  <script defer src="./assets/paper-figures.js?v=8a724c65d2"></script>
+  <link rel="stylesheet" href="./assets/paper-figures.css?v=2d1441d7d3">
+  <script defer src="./assets/paper-figures.js?v=dc97021ba9"></script>
   <link rel="icon" href="/assets/project-page/images/favicon.svg">
 
   <script defer src="/assets/project-page/js/fontawesome.all.min.js"></script>
@@ -323,31 +323,25 @@
       <div class="column is-four-fifths">
         <h2 class="title is-3 has-text-centered">A GPU-native training loop</h2>
         <p>In the reference implementation, most of a rollout step is spent outside physics.
-          Inspect the phases and GPU utilization below, then optimize the loop.</p>
+          Select an implementation to compare the rollout phases and GPU utilization.</p>
         <figure class="paper-figure" data-interactive-figure="profile">
           <div data-figure-fallback class="paper-figure__fallback">
             <img src="./assets/training-profile.jpg" alt="The optimized GPU profile fits into 3.033 ms, compared with the reference implementation’s 14.878 ms." width="1920" height="930" loading="lazy">
           </div>
           <div data-figure-stage class="paper-figure__stage" hidden>
-            <div class="paper-figure__summary"><span data-figure-label>Reference implementation</span><strong data-figure-value>14.878 ms</strong></div>
-            <div class="paper-figure__plot"><svg data-plot="profile" role="img" aria-label="Rollout phases and GPU utilization, on a fixed 0 to 15 millisecond time scale" aria-describedby="training-profile-caption"></svg></div>
-            <div class="paper-figure__legend" aria-label="Training phases">
+            <div class="paper-figure__tabs" role="tablist" aria-label="Training loop implementation">
+              <button type="button" role="tab" id="profile-reference-tab" aria-controls="profile-panel" aria-selected="true" tabindex="0" data-profile-tab>Reference</button>
+              <button type="button" role="tab" id="profile-instantmimic-tab" aria-controls="profile-panel" aria-selected="false" tabindex="-1" data-profile-tab>InstantMimic</button>
+            </div>
+            <div role="tabpanel" id="profile-panel" aria-labelledby="profile-reference-tab" tabindex="0">
+              <div class="paper-figure__summary"><span data-figure-label>Reference implementation</span><strong data-figure-value>14.878 ms</strong></div>
+              <div class="paper-figure__plot"><svg data-plot="profile" role="img" aria-label="Rollout phases and GPU utilization, on a fixed 0 to 15 millisecond time scale" aria-describedby="training-profile-caption"></svg></div>
+              <div class="paper-figure__legend" aria-label="Training phases">
               <span><i style="--series-color:#B9A0CC" aria-hidden="true"></i>Policy</span>
               <span><i style="--series-color:#8EC1FF" aria-hidden="true"></i>Physics</span>
               <span><i style="--series-color:#F8C27A" aria-hidden="true"></i>Evaluation</span>
               <span><i style="--series-color:#F29A9D" aria-hidden="true"></i>Reset</span>
               <span><i style="--series-color:#77D7D2" aria-hidden="true"></i>Observation</span>
-            </div>
-            <div class="paper-figure__actions">
-              <button type="button" class="paper-figure__action" data-figure-action hidden>Optimize</button>
-            <div class="paper-figure__controls">
-              <button type="button" data-figure-toggle aria-label="Pause animation" title="Pause animation">
-                <img data-play-icon src="./assets/phosphor/play.svg" alt="" width="20" height="20" hidden>
-                <img data-pause-icon src="./assets/phosphor/pause.svg" alt="" width="20" height="20">
-              </button>
-              <button type="button" data-figure-reset aria-label="Reset comparison" title="Reset comparison">
-                <img src="./assets/phosphor/arrow-counter-clockwise.svg" alt="" width="20" height="20">
-              </button>
             </div>
             </div>
             <span class="paper-figure__sr" role="status" data-figure-live></span>
@@ -359,45 +353,49 @@
   </div>
 </section>
 
-<section class="section" id="autoresearch">
+<section class="section" id="hyperparameter-search">
   <div class="container is-max-desktop">
-    <h2 class="title is-3 has-text-centered">LLM-guided hyperparameter search</h2>
-    <p>With the starting configuration, learning a backflip takes 18.77 s of active training.
-      Let an LLM agent test and refine the configuration, then compare the learning curves.</p>
-    <figure class="paper-figure" data-interactive-figure="search">
-      <div data-figure-fallback class="paper-figure__fallback paper-figure__fallback--search">
-        <img src="./assets/autoresearch.jpg" alt="Best training time decreases from 18.77 to 2.17 seconds over 80 optimization cycles." width="1920" height="930" loading="lazy">
-        <img src="./assets/learning-curves.svg" alt="Paper learning curves: the optimized configuration reaches full episode length sooner than the baseline." width="199" height="199" loading="lazy">
-      </div>
-      <div data-figure-stage class="paper-figure__stage" hidden>
-        <div class="paper-figure__summary">
-          <span><span data-figure-label>Baseline backflip training</span><strong data-figure-value>18.77 s</strong></span>
-          <span class="paper-figure__cycle">Cycle <span data-cycle>0</span> / 80</span>
-        </div>
-        <div class="paper-figure__plots">
-          <div class="paper-figure__plot"><h3>Search progress</h3><svg data-plot="search" role="img" aria-label="Best active training time across optimization cycles" aria-describedby="autoresearch-caption"></svg></div>
-          <div class="paper-figure__plot">
-            <h3>Backflip learning curves</h3>
-            <svg data-plot="learning" role="img" aria-label="Baseline and optimized episode length against active training time" aria-describedby="autoresearch-caption"></svg>
-            <div class="paper-figure__legend"><span><i style="--series-color:#5f5f5f" aria-hidden="true"></i>Baseline</span><span data-optimized-legend aria-hidden="true" style="opacity:0"><i style="--series-color:#2f5d7c" aria-hidden="true"></i>Optimized</span></div>
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3 has-text-centered">LLM-guided hyperparameter search</h2>
+        <p>With the starting configuration, learning a backflip takes 18.77 s of active training.
+          Replay the LLM-guided search and compare the learning curves.</p>
+        <figure class="paper-figure" data-interactive-figure="search">
+          <div data-figure-fallback class="paper-figure__fallback paper-figure__fallback--search">
+            <img src="./assets/search-progress.jpg" alt="Best training time decreases from 18.77 to 2.17 seconds over 80 optimization cycles." width="1920" height="930" loading="lazy">
+            <img src="./assets/learning-curves.svg" alt="Paper learning curves: the optimized configuration reaches full episode length sooner than the baseline." width="199" height="199" loading="lazy">
           </div>
-        </div>
-        <div class="paper-figure__actions">
-          <button type="button" class="paper-figure__action" data-figure-action>Run autoresearch</button>
-            <div class="paper-figure__controls">
-              <button type="button" data-figure-toggle aria-label="Pause animation" title="Pause animation">
-                <img data-play-icon src="./assets/phosphor/play.svg" alt="" width="20" height="20" hidden>
-                <img data-pause-icon src="./assets/phosphor/pause.svg" alt="" width="20" height="20">
-              </button>
-              <button type="button" data-figure-reset aria-label="Reset comparison" title="Reset comparison">
-                <img src="./assets/phosphor/arrow-counter-clockwise.svg" alt="" width="20" height="20">
-              </button>
+          <div data-figure-stage class="paper-figure__stage" hidden>
+            <div class="paper-figure__summary"><span data-figure-label>Baseline backflip training</span><strong data-figure-value>18.77 s</strong></div>
+            <div class="paper-figure__timeline">
+              <div class="paper-figure__controls">
+                <button type="button" data-search-toggle aria-label="Play search" title="Play search">
+                  <img data-play-icon src="./assets/phosphor/play.svg" alt="" width="20" height="20">
+                  <img data-pause-icon src="./assets/phosphor/pause.svg" alt="" width="20" height="20" hidden>
+                </button>
+                <button type="button" data-search-reset aria-label="Reset search" title="Reset search">
+                  <img src="./assets/phosphor/arrow-counter-clockwise.svg" alt="" width="20" height="20">
+                </button>
+              </div>
+              <div class="paper-figure__cycle-control">
+                <label for="search-cycle">Cycle <output data-cycle for="search-cycle">0</output> / 80</label>
+                <input id="search-cycle" data-cycle-slider type="range" min="0" max="80" step="1" value="0" aria-label="Optimization cycle" aria-valuetext="Cycle 0 of 80, best active training time 18.77 seconds">
+              </div>
             </div>
-        </div>
-        <span class="paper-figure__sr" role="status" data-figure-live></span>
+            <div class="paper-figure__plots">
+              <div class="paper-figure__plot"><h3>Search progress</h3><svg data-plot="search" role="img" aria-label="Best active training time across optimization cycles" aria-describedby="hyperparameter-search-caption"></svg></div>
+              <div class="paper-figure__plot">
+                <h3>Backflip learning curves</h3>
+                <svg data-plot="learning" role="img" aria-label="Baseline and optimized episode length against active training time" aria-describedby="hyperparameter-search-caption"></svg>
+                <div class="paper-figure__legend"><span><i style="--series-color:#5f5f5f" aria-hidden="true"></i>Baseline</span><span data-optimized-legend aria-hidden="true" style="opacity:0"><i style="--series-color:#2f5d7c" aria-hidden="true"></i>Optimized</span></div>
+              </div>
+            </div>
+            <span class="paper-figure__sr" role="status" data-figure-live></span>
+          </div>
+          <figcaption id="hyperparameter-search-caption">Left: best active training time to reach 90% success, measured as a three-seed median. Cycle 0 denotes the starting configuration. Right: learning curves and shaded ranges reproduced from the paper’s Figure 7b; the optimized curve becomes available at cycle 65. These paper experiments are separate from the individual motion runs above. See the <a href="https://arxiv.org/pdf/2609.09821">paper and appendix</a> for settings.</figcaption>
+        </figure>
       </div>
-      <figcaption id="autoresearch-caption">Left: best active training time to reach 90% success, measured as a three-seed median. Cycle 0 denotes the starting configuration. Right: learning curves and shaded ranges reproduced from the paper’s Figure 7b; the optimized curve appears after its configuration is found at cycle 65. These paper experiments are separate from the individual motion runs above. See the <a href="https://arxiv.org/pdf/2609.09821">paper and appendix</a> for settings.</figcaption>
-    </figure>
+    </div>
   </div>
 </section>
 
