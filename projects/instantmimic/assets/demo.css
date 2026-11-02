@@ -23,7 +23,7 @@
 .motion-demo__motions { display: flex; flex-wrap: wrap; justify-content: center; gap: .4rem; }
 .motion-demo__motions button { border: 0; border-radius: 6px; color: #626b70; background: transparent; padding: .45rem .8rem; }
 .motion-demo__motions button[aria-pressed="true"] { color: #18465a; background: #e8f0f3; }
-.motion-demo__intro { margin: 0 0 2.25rem; text-align: center; font-size: clamp(2rem, 4vw, 2.75rem); font-weight: 700; line-height: 1.12; letter-spacing: -.035em; text-wrap: balance; }
+.motion-demo__intro { margin: 0 0 2.25rem; text-align: center; font-size: clamp(1.625rem, 3vw, 2.125rem); font-weight: 500; line-height: 1.25; text-wrap: balance; }
 .motion-demo__intro span { color: #477d8e; white-space: nowrap; }
 .motion-demo__notes { color: #697278; font-size: .85rem; line-height: 1.6; text-align: center; }
 .motion-demo details { margin-top: 1rem; font-size: .88rem; line-height: 1.6; }
