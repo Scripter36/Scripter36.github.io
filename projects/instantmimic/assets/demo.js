@@ -28,15 +28,13 @@
       message: element.querySelector('[data-message]'),
       progress: element.querySelector('[data-training-progress]'),
       elapsed: element.querySelector('[data-elapsed]'),
-      cardProgress: element.querySelector('[data-card-progress]'),
-      cardElapsed: element.querySelector('[data-card-elapsed]')
+      cardProgress: element.querySelector('[data-card-progress]')
     };
     card.progress.max = motion.activeSeconds;
     card.progress.value = 0;
     card.cardProgress.max = motion.activeSeconds + PLAYBACK_SECONDS;
     card.cardProgress.value = 0;
     card.cardProgress.setAttribute('aria-label', `${motion.name} card progress`);
-    card.cardElapsed.textContent = `0.0 / ${card.cardProgress.max.toFixed(1)} s`;
     video.addEventListener('error', () => { if (i === index) showError(); });
     video.addEventListener('ended', () => { if (i === index && active()) selectMotion(index + 1, 1); });
     return card;
@@ -83,7 +81,6 @@
     const card = current();
     const value = elapsed / 1000 + (phase === 'video' ? Math.min(card.video.currentTime, PLAYBACK_SECONDS) : 0);
     card.cardProgress.value = value;
-    card.cardElapsed.textContent = `${value.toFixed(1)} / ${card.cardProgress.max.toFixed(1)} s`;
   }
 
   function showError() {
