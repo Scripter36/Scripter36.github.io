@@ -315,10 +315,10 @@
     <div class="columns is-centered">
       <div class="column is-four-fifths">
         <h2 class="title is-3 has-text-centered">A GPU-native training loop</h2>
-        <p>Most of the reference loop’s rollout time is spent outside physics.
-          InstantMimic fuses environment computation into Warp kernels and keeps simulation
-          state on the GPU. CUDA Graph replay reduces launch overhead, and PyTorch compilation
-          speeds up PPO updates.</p>
+        <p>Built on MuJoCo Warp, InstantMimic uses kernel fusion and CUDA Graph replay
+          to speed up the post-physics phase and PPO updates. State access and reset handling
+          stay on the GPU to avoid CPU memory access in the critical path.
+          The current runtime also includes simulator optimizations.</p>
         <figure class="paper-figure" data-interactive-figure="profile">
           <div data-figure-fallback class="paper-figure__fallback">
             <div class="paper-figure__summary">
@@ -367,10 +367,11 @@
   <div class="container is-max-desktop">
     <div class="columns is-centered">
       <div class="column is-four-fifths">
-        <h2 class="title is-3 has-text-centered">LLM-guided hyperparameter search</h2>
-        <p>Training in seconds makes it practical for an LLM agent to tune hyperparameters.
-          The agent uses results from multi-seed training runs to choose the next configuration.
-          Across 80 search cycles, backflip training time fell from 18.77 s to 2.17 s.</p>
+        <h2 class="title is-3 has-text-centered">LLM agent based hyperparameter optimization</h2>
+        <p>Seconds-level training makes LLM agent hyperparameter optimization practical.
+          The agent plans the search and proposes candidate values; a Python executor trains
+          and benchmarks them with multiple seeds. Results guide the next cycle.
+          Across 80 cycles, backflip training time fell from 18.77 s to 2.17 s.</p>
         <figure class="paper-figure" data-interactive-figure="search">
           <div data-figure-fallback class="paper-figure__fallback paper-figure__fallback--search">
             <img src="./assets/search-progress.jpg" alt="Best training time decreases from 18.77 to 2.17 seconds over 80 optimization cycles." width="1920" height="930" loading="lazy">
