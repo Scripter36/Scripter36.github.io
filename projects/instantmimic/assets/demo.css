@@ -72,3 +72,14 @@
 .amass-demo { margin: 1.75rem 0 2.5rem; }
 .amass-demo video { display: block; width: 100%; height: auto; border-radius: 10px; box-shadow: 0 8px 20px -6px rgb(30 45 54 / 20%), 0 2px 6px rgb(30 45 54 / 10%); }
 .amass-demo figcaption { margin-top: .75rem; color: #626b70; font-size: .9rem; line-height: 1.6; }
+
+.citation__heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+.citation__heading .title { margin: 0; }
+.citation__code { overflow: hidden; border: 1px solid #e2e7ea; border-radius: 10px; background: #f6f8f9; }
+.citation__code pre { margin: 0; padding: 1.25rem 1.5rem; overflow-x: auto; background: transparent; color: #30383d; }
+.citation__code pre, .citation__code code { font-family: ui-monospace, 'SFMono-Regular', Consolas, 'Liberation Mono', monospace; font-size: .875rem; line-height: 1.7; font-weight: 400; tab-size: 2; }
+.citation__copy { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; min-width: 94px; min-height: 40px; padding: .45rem .75rem; border: 1px solid #d4d9dc; border-radius: 7px; background: #fff; color: #30383d; font: inherit; font-size: .9rem; cursor: pointer; }
+.citation__copy[hidden] { display: none; }
+.citation__copy:hover { background: #f0f3f4; }
+.citation__copy:focus-visible { outline: 3px solid #237e9d; outline-offset: 3px; }
+@media (max-width: 480px) { .citation__code pre { padding: 1rem; } }

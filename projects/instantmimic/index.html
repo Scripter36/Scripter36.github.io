@@ -53,11 +53,12 @@
   <link rel="stylesheet" href="/assets/project-page/css/fontawesome.all.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css">
   <link rel="stylesheet" href="/assets/project-page/css/nerfies.css">
-  <link rel="stylesheet" href="./assets/demo.css?v=315533c3f4">
+  <link rel="stylesheet" href="./assets/demo.css?v=44a7623212">
   <script defer src="./assets/demo.js?v=37778aa38d"></script>
   <link rel="stylesheet" href="./assets/paper-figures.css?v=5860c98c72">
   <link rel="stylesheet" href="./assets/typography.css?v=834f25223f">
   <script defer src="./assets/paper-figures.js?v=1754f3270c"></script>
+  <script defer src="./assets/citation.js?v=a227ace20b"></script>
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg?v=im1">
 
   <script defer src="/assets/project-page/js/fontawesome.all.min.js"></script>
@@ -474,15 +475,22 @@
   <div class="container is-max-desktop">
     <div class="columns is-centered">
       <div class="column is-four-fifths">
-        <h2 class="title is-3">BibTeX</h2>
-        <pre><code>@inproceedings{choi2026instantmimic,
+        <div class="citation__heading">
+          <h2 class="title is-3">BibTeX</h2>
+          <button class="citation__copy" type="button" data-copy-citation hidden>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V4H4v12h4" stroke-linejoin="round"/></svg>
+            <span data-copy-label>Copy</span>
+          </button>
+        </div>
+        <div class="citation__code"><pre><code data-citation>@inproceedings{choi2026instantmimic,
   title     = {{InstantMimic}: A High Performance System for
                Learning Physics-based Skills in Seconds},
   author    = {Choi, Ikjun and Leem, Geonho and Won, Jungdam},
   booktitle = {SIGGRAPH Asia 2026 Conference Papers},
   year      = {2026},
   doi       = {10.1145/3829340.3842170}
-}</code></pre>
+}</code></pre></div>
+        <span class="is-sr-only" data-copy-status role="status" aria-live="polite"></span>
       </div>
     </div>
   </div>
