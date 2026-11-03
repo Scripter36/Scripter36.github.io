@@ -395,10 +395,9 @@
     <div class="columns is-centered">
       <div class="column is-four-fifths">
         <h2 class="title is-3 has-text-centered">LLM agent based hyperparameter optimization</h2>
-        <p>Training in seconds lets an LLM agent run repeated hyperparameter experiments.
-          The agent plans the search and proposes candidate values. A Python executor trains
-          and benchmarks each candidate with multiple seeds, and the agent uses the results
-          to revise its search strategy. In our 80-cycle backflip search,
+        <p>Our optimized training loop makes LLM agent hyperparameter optimization practical.
+          The agent plans the search, proposes candidate hyperparameters, and refines its strategy
+          based on multi-seed training results. In our 80-cycle backflip search,
           time to success fell from 18.77 s to 2.17 s.</p>
         <figure class="paper-figure" data-interactive-figure="search">
           <div data-figure-fallback class="paper-figure__fallback paper-figure__fallback--search">
@@ -432,7 +431,7 @@
             </div>
             <span class="paper-figure__sr" role="status" data-figure-live></span>
           </div>
-          <figcaption id="hyperparameter-search-caption">Left: best time to 90% success, measured as the median active training time across three seeds. Right: backflip learning curves for the initial configuration and the configuration found at cycle 65 (Figure 7b). See the <a href="https://arxiv.org/pdf/2609.09821">paper and appendix</a> for settings.</figcaption>
+          <figcaption id="hyperparameter-search-caption">Left: best time to 90% success, measured as the median active training time across three seeds. Right: backflip learning curves for the initial and best configurations. See the <a href="https://arxiv.org/pdf/2609.09821">paper and appendix</a> for settings.</figcaption>
         </figure>
       </div>
     </div>
